@@ -1,0 +1,35 @@
+project:
+  type: website
+
+website:
+  title: "laurenswebsite"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - text: "Projects"
+        href: projects.qmd
+    tools: 
+      - icon: linkedin
+        href: https://www.linkedin.com/in/lauren-bgerber/
+      - icon: envelope
+        href: mailto:laurenbgerber22@gmail.com
+    
+  sidebar: 
+      - title: "Projects"
+        style: "docked"
+        contents: 
+        - projects.qmd
+        - projects-1.qmd 
+      
+        
+
+format:
+  html:
+    theme: minty
+    css: styles.css
+    toc: true
+
+editor: visual
+
