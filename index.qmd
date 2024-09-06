@@ -9,3 +9,23 @@ To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
 ```{r}
 1 + 1
 ```
+
+I am adding this piece of code so can see how the interactive an non interactive plots can be embedded %>%  in quarto. You can erase it if you want. 
+
+```{r}
+library(highcharter)
+highcharter::highcharts_demo()
+
+```
+
+```{r}
+library(tidyverse)
+library(datasauRus)
+
+datasauRus::datasaurus_dozen %>% 
+  filter(dataset == "dino") %>% 
+  ggplot(aes(x, y)) +
+  geom_point() +
+  theme_void()
+
+```
