@@ -20,3 +20,5 @@ Hi there! I'm Lauren, and this is my website where I will be documenting my prog
 [**Projects**](projects.qmd)**: Explore the projects I'm working on**
 
 Feel free to explore, and don’t hesitate to reach out if you have any questions! My contact info can be found in the top right under the icons!
+
+![](images/ocean.jpg){width="1006"}

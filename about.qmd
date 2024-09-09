@@ -17,3 +17,5 @@ My name is Lauren. I'm currently a Master's student in Social Scientific Data An
 I am creating this website as a part of my internship at the Quality of Governance Institute at the University of Gothenburg.
 
 I hope to showcase some of my projects here!
+
+![](images/75226289_2826754140682536_4405179330796191744_n-1.jpg){width="458"}
