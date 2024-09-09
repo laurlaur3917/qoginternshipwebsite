@@ -1,9 +1,19 @@
 ---
 title: "About"
+execute: 
+  warning: false
+  message: false
+format:
+  html:
+    page-layout: full
+    title-block-banner: true
+    code-fold: true 
 ---
 
-About this site
+Hello!
 
-```{r}
-1 + 1
-```
+My name is Lauren. I'm currently a Master's student in Social Scientific Data Analysis at Lund University.
+
+I am creating this website as a part of my internship at the Quality of Governance Institute at the University of Gothenburg.
+
+I hope to showcase some of my projects here!

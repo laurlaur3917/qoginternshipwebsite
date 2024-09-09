@@ -1,5 +1,15 @@
 ---
 title: "projects"
+execute: 
+  warning: false
+  message: false
+format:
+  html:
+    page-layout: full
+    title-block-banner: true
+    code-fold: true 
 ---
 
-projects
+# Below are a list of my current projects: 
+
+[**Project 1**](projects-1.qmd) **: Reading a basic US County Map into R; making the map interactive so one can zoom in for better readability.**

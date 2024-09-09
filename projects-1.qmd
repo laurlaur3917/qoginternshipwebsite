@@ -1,0 +1,52 @@
+---
+title: "project #1"
+execute: 
+  warning: false
+  message: false
+format:
+  html:
+    page-layout: full
+    title-block-banner: true
+    code-fold: true 
+---
+
+## Reading a basic county-level map into R
+
+Feel free to toggle the code if you want to follow along!
+
+```{r}
+library(sf)
+library(ggplot2)
+library(leaflet)
+library(tidyverse)
+
+#us county map
+us_data <- st_read("/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp", quiet=TRUE)
+
+ggplot(data = us_data) +
+  geom_sf() +
+  theme_minimal() +
+  labs(title = "County Boundaries")
+```
+
+## Making the map interactive and more user friendly (zoomable!):
+
+```{r}
+#correct incorrect geometries 
+
+county_map <- st_make_valid(us_data)
+
+
+#calculate center of map 
+centroid <- st_centroid(st_union(county_map))
+center_lng <- st_coordinates(centroid)[1, "X"]
+center_lat <- st_coordinates(centroid)[1, "Y"]
+
+#make interactive so one can zoom in, centering the map
+leaflet(data=county_map) %>% 
+  addTiles() %>% 
+  addPolygons(weight=0.5) %>% 
+  setView(lng=-103.9263, lat= 44.70478, zoom=4)
+
+#note: I had to print(center_lng) and print(center_lat) to get the exact lng and lat used in the setView function. R wouldn't allow me to set lng=center_lng and lat=center_lat for some reason
+```

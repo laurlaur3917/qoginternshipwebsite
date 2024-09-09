@@ -2,26 +2,66 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "laurenswebsite",
+    "title": "Welcome to Lauren’s Website!",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Hi there! I’m Lauren, and this is my website where I will be documenting my progress in spatial analysis, among other things. I hope that this website can serve to help others also just getting started!\n\n\nAbout : Learn more about me and the purpose of this site\nProjects: Explore the projects I’m working on\nFeel free to explore, and don’t hesitate to reach out if you have any questions! My contact info can be found in the top right under the icons!"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "Hello!\nMy name is Lauren. I’m currently a Master’s student in Social Scientific Data Analysis at Lund University.\nI am creating this website as a part of my internship at the Quality of Governance Institute at the University of Gothenburg.\nI hope to showcase some of my projects here!"
   },
   {
     "objectID": "projects.html",
     "href": "projects.html",
     "title": "projects",
     "section": "",
-    "text": "projects",
+    "text": "Below are a list of my current projects:\nProject 1 : Reading a basic US County Map into R; making the map interactive so one can zoom in for better readability.",
     "crumbs": [
       "Projects",
       "projects"
+    ]
+  },
+  {
+    "objectID": "index.html#what-youll-find-here",
+    "href": "index.html#what-youll-find-here",
+    "title": "Welcome to Lauren’s Website!",
+    "section": "",
+    "text": "About : Learn more about me and the purpose of this site\nProjects: Explore the projects I’m working on\nFeel free to explore, and don’t hesitate to reach out if you have any questions! My contact info can be found in the top right under the icons!"
+  },
+  {
+    "objectID": "projects-1.html",
+    "href": "projects-1.html",
+    "title": "project #1",
+    "section": "",
+    "text": "Feel free to toggle the code if you want to follow along!\n\n\nCode\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(leaflet)\nlibrary(tidyverse)\n\n#us county map\nus_data &lt;- st_read(\"/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp\", quiet=TRUE)\n\nggplot(data = us_data) +\n  geom_sf() +\n  theme_minimal() +\n  labs(title = \"County Boundaries\")",
+    "crumbs": [
+      "Projects",
+      "project #1"
+    ]
+  },
+  {
+    "objectID": "projects-1.html#reading-a-basic-county-level-map-into-r",
+    "href": "projects-1.html#reading-a-basic-county-level-map-into-r",
+    "title": "project #1",
+    "section": "",
+    "text": "Feel free to toggle the code if you want to follow along!\n\n\nCode\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(leaflet)\nlibrary(tidyverse)\n\n#us county map\nus_data &lt;- st_read(\"/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp\", quiet=TRUE)\n\nggplot(data = us_data) +\n  geom_sf() +\n  theme_minimal() +\n  labs(title = \"County Boundaries\")",
+    "crumbs": [
+      "Projects",
+      "project #1"
+    ]
+  },
+  {
+    "objectID": "projects-1.html#making-the-map-interactive-and-more-user-friendly-zoomable",
+    "href": "projects-1.html#making-the-map-interactive-and-more-user-friendly-zoomable",
+    "title": "project #1",
+    "section": "Making the map interactive and more user friendly (zoomable!):",
+    "text": "Making the map interactive and more user friendly (zoomable!):\n\n\nCode\n#correct incorrect geometries \n\ncounty_map &lt;- st_make_valid(us_data)\n\n\n#calculate center of map \ncentroid &lt;- st_centroid(st_union(county_map))\ncenter_lng &lt;- st_coordinates(centroid)[1, \"X\"]\ncenter_lat &lt;- st_coordinates(centroid)[1, \"Y\"]\n\n#make interactive so one can zoom in, centering the map\nleaflet(data=county_map) %&gt;% \n  addTiles() %&gt;% \n  addPolygons(weight=0.5) %&gt;% \n  setView(lng=-103.9263, lat= 44.70478, zoom=4)\n\n\n\n\n\n\nCode\n#note: I had to print(center_lng) and print(center_lat) to get the exact lng and lat used in the setView function. R wouldn't allow me to set lng=center_lng and lat=center_lat for some reason",
+    "crumbs": [
+      "Projects",
+      "project #1"
     ]
   }
 ]
