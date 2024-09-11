@@ -12,4 +12,4 @@ format:
 
 # Below are a list of my current projects:
 
-[**Project 1**](projects-1.qmd) **: Reading a basic US County Map into R; making the map interactive so one can zoom in for better readability.**
+[**Project 1**](projects-1.qmd) **: Reading basic US County Maps into R; making the map interactive so one can zoom in for better readability.**

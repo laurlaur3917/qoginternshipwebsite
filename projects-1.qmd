@@ -19,13 +19,16 @@ library(sf)
 library(ggplot2)
 library(leaflet)
 library(tidyverse)
+library(ggthemes)
+
+
 
 #us county map
 us_data <- st_read("/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp", quiet=TRUE)
 
-ggplot(data = us_data) +
-  geom_sf() +
-  theme_minimal() +
+ ggplot(data = us_data) +
+  geom_sf(lwd=0.03) +
+  ggthemes::theme_map()
   labs(title = "County Boundaries")
 ```
 
@@ -45,8 +48,71 @@ center_lat <- st_coordinates(centroid)[1, "Y"]
 #make interactive so one can zoom in, centering the map
 leaflet(data=county_map) %>% 
   addTiles() %>% 
-  addPolygons(weight=0.5) %>% 
+  addPolygons(weight=0.1) %>% 
   setView(lng=-103.9263, lat= 44.70478, zoom=4)
 
 #note: I had to print(center_lng) and print(center_lat) to get the exact lng and lat used in the setView function. R wouldn't allow me to set lng=center_lng and lat=center_lat for some reason
 ```
+
+## Trying from another, more complicated source: <https://github.com/generalpiston/geojson-us-city-boundaries>
+
+First, starting with state data:
+
+```{r}
+states_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/states"
+
+#takes the main folder states_dir and lists every file ending in .json
+states_files<- list.files(states_dir, pattern= "\\.json$", full.names=TRUE)
+
+#apply a function in R to everything in list, we want to read every single state file: 
+states_list<- lapply(states_files, function(file) st_read(file, quiet = TRUE))
+
+#Create one big spatial data frame 
+states<- do.call(rbind, states_list)
+
+```
+
+Testing if states worked:
+
+```{r}
+
+
+ggplot() +
+  geom_sf(data=states)
+  
+
+```
+
+This took a while and I'm not exactly sure what it is mapping, i found a shape file which is probably more useful
+
+Testing shape files:
+
+```{r}
+#Path to shape folder 
+shape_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
+
+#List all the zip files in the shape folder
+zip_files<- list.files(shape_dir, pattern="\\.zip$", full.names= TRUE)
+
+#set to unzip the folders in the shape folder 
+unzip_dir <- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
+
+#for every zip_file in zip_files list, unzip and save in the shape folder 
+for (zip_file in zip_files) {
+  unzip(zip_file, exdir=unzip_dir)
+}
+
+#take only the files in the shape folder with .shp at the end 
+shp_files <- list.files(unzip_dir, pattern = "\\.shp$", full.names = TRUE)
+
+
+shapefiles<- lapply(shp_files, function(file) st_read(file, quiet = TRUE))
+
+shape<- do.call(rbind, shapefiles)
+
+
+```
+
+I tried to plot these as well, but It's too big and don't think it's exactly the data we want. Lets try another source.
+
+<https://eric.clst.org/tech/usgeojson/>: adapted from the United States Census Cartographic Boundary Files. Let's try the 5m US County Boundaries.
