@@ -28,7 +28,7 @@ us_data <- st_read("/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_20
 
  ggplot(data = us_data) +
   geom_sf(lwd=0.03) +
-  ggthemes::theme_map()
+  ggthemes::theme_map() +
   labs(title = "County Boundaries")
 ```
 
@@ -56,29 +56,30 @@ leaflet(data=county_map) %>%
 
 ## Trying from another, more complicated source: <https://github.com/generalpiston/geojson-us-city-boundaries>
 
+#### Note: I'm commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. If you want to try at home feel free to copy the code. 
+
 First, starting with state data:
 
 ```{r}
-states_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/states"
+#states_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/states"
 
 #takes the main folder states_dir and lists every file ending in .json
-states_files<- list.files(states_dir, pattern= "\\.json$", full.names=TRUE)
+#states_files<- list.files(states_dir, pattern= "\\.json$", full.names=TRUE)
 
 #apply a function in R to everything in list, we want to read every single state file: 
-states_list<- lapply(states_files, function(file) st_read(file, quiet = TRUE))
+#states_list<- lapply(states_files, function(file) st_read(file, quiet = TRUE))
 
 #Create one big spatial data frame 
-states<- do.call(rbind, states_list)
+#states<- do.call(rbind, states_list)
 
 ```
 
 Testing if states worked:
 
 ```{r}
-
-
-ggplot() +
-  geom_sf(data=states)
+#ggplot() +
+  #geom_sf(data=states)
+    
   
 
 ```
@@ -89,26 +90,26 @@ Testing shape files:
 
 ```{r}
 #Path to shape folder 
-shape_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
+#shape_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
 
 #List all the zip files in the shape folder
-zip_files<- list.files(shape_dir, pattern="\\.zip$", full.names= TRUE)
+#zip_files<- list.files(shape_dir, pattern="\\.zip$", full.names= TRUE)
 
 #set to unzip the folders in the shape folder 
-unzip_dir <- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
+#unzip_dir <- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
 
 #for every zip_file in zip_files list, unzip and save in the shape folder 
-for (zip_file in zip_files) {
-  unzip(zip_file, exdir=unzip_dir)
-}
+#for (zip_file in zip_files) {
+  #unzip(zip_file, exdir=unzip_dir)
+#}
 
 #take only the files in the shape folder with .shp at the end 
-shp_files <- list.files(unzip_dir, pattern = "\\.shp$", full.names = TRUE)
+#shp_files <- list.files(unzip_dir, pattern = "\\.shp$", full.names = TRUE)
 
 
-shapefiles<- lapply(shp_files, function(file) st_read(file, quiet = TRUE))
+#shapefiles<- lapply(shp_files, function(file) st_read(file, quiet = TRUE))
 
-shape<- do.call(rbind, shapefiles)
+#shape<- do.call(rbind, shapefiles)
 
 
 ```

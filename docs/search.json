@@ -11,7 +11,7 @@
     "href": "projects.html",
     "title": "projects",
     "section": "",
-    "text": "Below are a list of my current projects:\nProject 1 : Reading a basic US County Map into R; making the map interactive so one can zoom in for better readability.",
+    "text": "Below are a list of my current projects:\nProject 1 : Reading basic US County Maps into R; making the map interactive so one can zoom in for better readability.",
     "crumbs": [
       "Projects",
       "projects"
@@ -22,7 +22,7 @@
     "href": "projects-1.html",
     "title": "project #1",
     "section": "",
-    "text": "Feel free to toggle the code if you want to follow along!\n\n\nCode\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(leaflet)\nlibrary(tidyverse)\n\n#us county map\nus_data &lt;- st_read(\"/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp\", quiet=TRUE)\n\nggplot(data = us_data) +\n  geom_sf() +\n  theme_minimal() +\n  labs(title = \"County Boundaries\")",
+    "text": "Feel free to toggle the code if you want to follow along!\n\n\nCode\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(leaflet)\nlibrary(tidyverse)\nlibrary(ggthemes)\n\n\n\n#us county map\nus_data &lt;- st_read(\"/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp\", quiet=TRUE)\n\n ggplot(data = us_data) +\n  geom_sf(lwd=0.03) +\n  ggthemes::theme_map() +\n  labs(title = \"County Boundaries\")",
     "crumbs": [
       "Projects",
       "project #1"
@@ -33,7 +33,7 @@
     "href": "projects-1.html#reading-a-basic-county-level-map-into-r",
     "title": "project #1",
     "section": "",
-    "text": "Feel free to toggle the code if you want to follow along!\n\n\nCode\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(leaflet)\nlibrary(tidyverse)\n\n#us county map\nus_data &lt;- st_read(\"/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp\", quiet=TRUE)\n\nggplot(data = us_data) +\n  geom_sf() +\n  theme_minimal() +\n  labs(title = \"County Boundaries\")",
+    "text": "Feel free to toggle the code if you want to follow along!\n\n\nCode\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(leaflet)\nlibrary(tidyverse)\nlibrary(ggthemes)\n\n\n\n#us county map\nus_data &lt;- st_read(\"/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp\", quiet=TRUE)\n\n ggplot(data = us_data) +\n  geom_sf(lwd=0.03) +\n  ggthemes::theme_map() +\n  labs(title = \"County Boundaries\")",
     "crumbs": [
       "Projects",
       "project #1"
@@ -44,7 +44,7 @@
     "href": "projects-1.html#making-the-map-interactive-and-more-user-friendly-zoomable",
     "title": "project #1",
     "section": "Making the map interactive and more user friendly (zoomable!):",
-    "text": "Making the map interactive and more user friendly (zoomable!):\n\n\nCode\n#correct incorrect geometries \n\ncounty_map &lt;- st_make_valid(us_data)\n\n\n#calculate center of map \ncentroid &lt;- st_centroid(st_union(county_map))\ncenter_lng &lt;- st_coordinates(centroid)[1, \"X\"]\ncenter_lat &lt;- st_coordinates(centroid)[1, \"Y\"]\n\n#make interactive so one can zoom in, centering the map\nleaflet(data=county_map) %&gt;% \n  addTiles() %&gt;% \n  addPolygons(weight=0.5) %&gt;% \n  setView(lng=-103.9263, lat= 44.70478, zoom=4)\n\n\n\n\n\n\nCode\n#note: I had to print(center_lng) and print(center_lat) to get the exact lng and lat used in the setView function. R wouldn't allow me to set lng=center_lng and lat=center_lat for some reason",
+    "text": "Making the map interactive and more user friendly (zoomable!):\n\n\nCode\n#correct incorrect geometries \n\ncounty_map &lt;- st_make_valid(us_data)\n\n\n#calculate center of map \ncentroid &lt;- st_centroid(st_union(county_map))\ncenter_lng &lt;- st_coordinates(centroid)[1, \"X\"]\ncenter_lat &lt;- st_coordinates(centroid)[1, \"Y\"]\n\n#make interactive so one can zoom in, centering the map\nleaflet(data=county_map) %&gt;% \n  addTiles() %&gt;% \n  addPolygons(weight=0.1) %&gt;% \n  setView(lng=-103.9263, lat= 44.70478, zoom=4)\n\n\n\n\n\n\nCode\n#note: I had to print(center_lng) and print(center_lat) to get the exact lng and lat used in the setView function. R wouldn't allow me to set lng=center_lng and lat=center_lat for some reason",
     "crumbs": [
       "Projects",
       "project #1"
@@ -63,5 +63,16 @@
     "title": "Welcome to Lauren’s Website!",
     "section": "",
     "text": "About : Learn more about me and the purpose of this site\nProjects: Explore the projects I’m working on\nFeel free to explore, and don’t hesitate to reach out if you have any questions! My contact info can be found in the top right under the icons!"
+  },
+  {
+    "objectID": "projects-1.html#trying-from-another-more-complicated-source-httpsgithub.comgeneralpistongeojson-us-city-boundaries",
+    "href": "projects-1.html#trying-from-another-more-complicated-source-httpsgithub.comgeneralpistongeojson-us-city-boundaries",
+    "title": "project #1",
+    "section": "Trying from another, more complicated source: https://github.com/generalpiston/geojson-us-city-boundaries",
+    "text": "Trying from another, more complicated source: https://github.com/generalpiston/geojson-us-city-boundaries\n\nNote: I’m commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. If you want to try at home feel free to copy the code.\nFirst, starting with state data:\n\n\nCode\n#states_dir&lt;- \"/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/states\"\n\n#takes the main folder states_dir and lists every file ending in .json\n#states_files&lt;- list.files(states_dir, pattern= \"\\\\.json$\", full.names=TRUE)\n\n#apply a function in R to everything in list, we want to read every single state file: \n#states_list&lt;- lapply(states_files, function(file) st_read(file, quiet = TRUE))\n\n#Create one big spatial data frame \n#states&lt;- do.call(rbind, states_list)\n\n\nTesting if states worked:\n\n\nCode\n#ggplot() +\n  #geom_sf(data=states)\n\n\nThis took a while and I’m not exactly sure what it is mapping, i found a shape file which is probably more useful\nTesting shape files:\n\n\nCode\n#Path to shape folder \n#shape_dir&lt;- \"/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes\"\n\n#List all the zip files in the shape folder\n#zip_files&lt;- list.files(shape_dir, pattern=\"\\\\.zip$\", full.names= TRUE)\n\n#set to unzip the folders in the shape folder \n#unzip_dir &lt;- \"/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes\"\n\n#for every zip_file in zip_files list, unzip and save in the shape folder \n#for (zip_file in zip_files) {\n  #unzip(zip_file, exdir=unzip_dir)\n#}\n\n#take only the files in the shape folder with .shp at the end \n#shp_files &lt;- list.files(unzip_dir, pattern = \"\\\\.shp$\", full.names = TRUE)\n\n\n#shapefiles&lt;- lapply(shp_files, function(file) st_read(file, quiet = TRUE))\n\n#shape&lt;- do.call(rbind, shapefiles)\n\n\nI tried to plot these as well, but It’s too big and don’t think it’s exactly the data we want. Lets try another source.\nhttps://eric.clst.org/tech/usgeojson/: adapted from the United States Census Cartographic Boundary Files. Let’s try the 5m US County Boundaries.",
+    "crumbs": [
+      "Projects",
+      "project #1"
+    ]
   }
 ]
