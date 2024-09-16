@@ -1,0 +1,60 @@
+---
+title: "project #2"
+execute: 
+  warning: false
+  message: false
+format:
+  html:
+    page-layout: full
+    title-block-banner: true
+    code-fold: true 
+---
+
+### Now let's load some election data and plot it:
+
+```{r}
+library(sf)
+library(ggplot2)
+library(leaflet)
+library(tidyverse)
+library(ggthemes)
+load("~/Downloads/dataverse_shareable_presidential_county_returns_1868_2020.Rdata")
+us_data2<- st_read("/Users/laurengerber/Downloads/gz_2010_us_050_00_5m.json", quiet=TRUE)
+
+#replace non-printable characters with blank space
+us_data2$NAME <- str_replace_all(us_data2$NAME, "[^[:print:]]", "")
+```
+
+```{r}
+#mutate names to upper in the map data to match the election data 
+us_data2<- us_data2 %>% 
+  mutate(NAME= toupper(NAME)) 
+  
+us_data2<- us_data2 %>% 
+  rename(county_name=NAME)     
+
+#make new variables to give republican and democrat % of vote, as well as statements to take the republican/democrat vote if over 50% 
+pres_elections_release<- pres_elections_release %>% 
+  mutate(republican_raw_votes_2perc= republican_raw_votes/pres_raw_county_vote_totals_two_party) %>% mutate(democratic_raw_votes_2perc= 1-republican_raw_votes_2perc) %>% mutate(republican_excess=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc-0.5, 0), democrat_excess= ifelse(democratic_raw_votes_2perc>0.5, democratic_raw_votes_2perc-0.5, 0), dominantparty= ifelse(republican_raw_votes_2perc > democratic_raw_votes_2perc, "Republican", "Democrat"))
+```
+
+```{r}
+#merge on county_name 
+merged<- merge(us_data2, pres_elections_release, by= "county_name", all=TRUE) 
+```
+
+```{r}
+#filter to 2016 
+year2016<- merged %>% 
+  filter(election_year==2016)
+```
+
+## 2016 election plot: 
+
+```{r}
+#plot for year 2016 dominant party in each county and by how much 
+ggplot(year2016) + geom_sf(aes(fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)))+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, name="Vote over 50% ")
+
+```
+
+![](images/unnamed-chunk-5-1.png)
