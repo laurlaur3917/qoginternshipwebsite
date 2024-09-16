@@ -56,7 +56,7 @@ leaflet(data=county_map) %>%
 
 ## Trying from another, more complicated source: <https://github.com/generalpiston/geojson-us-city-boundaries>
 
-#### Note: I'm commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. If you want to try at home feel free to copy the code. 
+#### Note: I'm commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. If you want to try at home feel free to copy the code.
 
 First, starting with state data:
 
@@ -117,3 +117,92 @@ Testing shape files:
 I tried to plot these as well, but It's too big and don't think it's exactly the data we want. Lets try another source.
 
 <https://eric.clst.org/tech/usgeojson/>: adapted from the United States Census Cartographic Boundary Files. Let's try the 5m US County Boundaries.
+
+```{r}
+us_data2<- st_read("/Users/laurengerber/Downloads/gz_2010_us_050_00_5m.json", quiet=TRUE)
+
+ggplot() +
+  geom_sf(data=us_data2, lwd=0.04) +
+  coord_sf(xlim=c(-180, -60), ylim=c(20,70)) +
+  ggthemes:: theme_map() +
+  labs(title = "County Boundaries")
+
+  
+ 
+  
+```
+
+This seemed to work better. Let's now make it zoomable again.
+
+```{r}
+county_map2 <- st_make_valid(us_data2)
+
+
+#calculate center of map 
+centroid <- st_centroid(st_union(county_map2))
+center_lng <- st_coordinates(centroid)[1, "X"]
+center_lat <- st_coordinates(centroid)[1, "Y"]
+
+#make interactive so one can zoom in, centering the map
+leaflet(data=county_map2) %>% 
+  addTiles() %>% 
+  addPolygons(weight=0.1) %>% 
+  setView(lng=-103.9293, lat= 44.73773, zoom=4)
+```
+
+Compressing file with different methods, they all seem to compress to 4.2 MB.
+
+```{r}
+library(jsonlite)
+#write_json(us_data2, "usdata2_compressed_file.json.gz", compress = "gzip") #4.2 MB
+#write_json(us_data2, "usdata2_bzip2.json.bz2", compress = "bzip2") #4.2 MB 
+#write_json(us_data2, "usdata2_xz.json.xz", compress = "xz") #4.2 
+
+```
+
+### Now let's load some election data and plot it:
+
+```{r}
+load("~/Downloads/dataverse_shareable_presidential_county_returns_1868_2020.Rdata")
+```
+
+```{r}
+#replace non-printable characters with blank space
+us_data2$NAME <- str_replace_all(us_data2$NAME, "[^[:print:]]", "")
+```
+
+```{r}
+#mutate names to upper in the map data to match the election data 
+us_data2<- us_data2 %>% 
+  mutate(NAME= toupper(NAME)) 
+  
+us_data2<- us_data2 %>% 
+  rename(county_name=NAME)     
+
+#make new variables to give republican and democrat % of vote, as well as statements to take the republican/democrat vote if over 50% 
+pres_elections_release<- pres_elections_release %>% 
+  mutate(republican_raw_votes_2perc= republican_raw_votes/pres_raw_county_vote_totals_two_party) %>% mutate(democratic_raw_votes_2perc= 1-republican_raw_votes_2perc) %>% mutate(republican_excess=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc-0.5, 0), democrat_excess= ifelse(democratic_raw_votes_2perc>0.5, democratic_raw_votes_2perc-0.5, 0), dominantparty= ifelse(republican_raw_votes_2perc > democratic_raw_votes_2perc, "Republican", "Democrat"))
+  
+```
+
+```{r}
+#merge on county_name 
+merged<- merge(us_data2, pres_elections_release, by= "county_name", all=TRUE) 
+```
+
+```{r}
+#filter to 2016 
+year2016<- merged %>% 
+  filter(election_year==2016)
+
+```
+
+## 2016 election plot
+
+```{r}
+
+#plot for year 2016 dominant party in each county and by how much 
+ggplot(year2016) +
+  geom_sf(aes(fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)))+
+  scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, name="Vote over 50% ")
+```
