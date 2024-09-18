@@ -38,21 +38,177 @@ pres_elections_release<- pres_elections_release %>%
   mutate(republican_raw_votes_2perc= republican_raw_votes/pres_raw_county_vote_totals_two_party) %>% mutate(democratic_raw_votes_2perc= 1-republican_raw_votes_2perc) %>% mutate(republican_excess=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc-0.5, 0), democrat_excess= ifelse(democratic_raw_votes_2perc>0.5, democratic_raw_votes_2perc-0.5, 0), dominantparty= ifelse(republican_raw_votes_2perc > democratic_raw_votes_2perc, "Republican", "Democrat"))
 ```
 
+Let's carefully merge the data.
+
 ```{r}
 #merge on county_name 
-merged<- merge(us_data2, pres_elections_release, by= "county_name", all=TRUE) 
+us_data2<- st_make_valid(us_data2)
+count<- us_data2 %>% count(GEO_ID)
+#every single county (3221) has one entry- yay!! 
+
+#double check: 
+
+unique_count<- us_data2 %>% pull(GEO_ID) %>% 
+  unique() %>% length()
+#3221 unique geo-ids, yay! 
+
+#now move onto the next dataset: should be 39 of each entry for each election 1868-2020
+count2<- pres_elections_release %>% count(fips)
+
+#after inspecting, 1912 seems like a good year to start. 
+
+dataafter1912<- pres_elections_release %>% filter(election_year >= 1912)
+
+#recount, now should have 28 entries. Lots of missing data. 
+
+count2<- dataafter1912 %>% count(fips)
+
+```
+
+```{r}
+#want to create year and fips columns and fill in our missing data with NA
+
+#all distinct fips codes, pull into a vector 
+fips_codes<- dataafter1912 %>% distinct(fips) %>% pull()
+#sequence every 4 years from 1912-2020
+election_years<- seq(1912, 2020, by=4)
+#create data frame for all combinations of distinct fips and election years 
+complete_data<- expand.grid(fips= fips_codes, election_year= election_years) 
+
+#compares complete data with original data, returns rows that are not in original data
+missing_data<- complete_data %>% anti_join(dataafter1912, by=c("fips", "election_year"))
+
+#bind the missing rows with the original dataset
+newelectiondata<- bind_rows(dataafter1912, missing_data)
+
+#check counts again, should have 28 of each
+
+count3<- newelectiondata %>% count(fips)
+
+#now we are good! however there are 3131 entries, which might pose a problem merging with the other set. Let's see which ones are the issues: 
+                                           
+```
+
+```{r}
+#make new column GEOID to match the us_data2 county identifier 
+newelectiondata<- newelectiondata %>%  mutate(GEO_ID= paste0("0500000US", fips))
+
+
+
+
+```
+
+```{r}
+#| results: hide
+#is every unique GEO_ID in newelectiondata in us_data2? 
+(newelectiondata$GEO_ID %>% unique) %in% (us_data2$GEO_ID %>% unique)
+
+#name every unique ID which is not in us_data2, 17 values
+missingnewelectiondata<- (newelectiondata$GEO_ID %>% unique)[!(newelectiondata$GEO_ID %>% unique) %in% (us_data2$GEO_ID %>% unique)]
+
+
+#check other way around 
+(us_data2$GEO_ID %>% unique) %in% (newelectiondata$GEO_ID %>% unique)
+
+#check which values aren't in election data
+missingusdata2<- (us_data2$GEO_ID %>% unique)[!(us_data2$GEO_ID %>% unique) %in% (newelectiondata$GEO_ID %>% unique)]
+
+
+
+
+```
+
+```{r}
+#now lets finally merge the data 
+
+mergedelectiondata<- full_join(newelectiondata, us_data2, by="GEO_ID")
 ```
 
 ```{r}
 #filter to 2016 
-year2016<- merged %>% 
+year2016<- mergedelectiondata %>% 
   filter(election_year==2016)
 ```
 
-## 2016 election plot: 
+```{r}
+year1912<- mergedelectiondata %>%  filter(election_year==1912)
+```
+
+## 2016 election plot:
 
 ```{r}
 #plot for year 2016 dominant party in each county and by how much 
-ggplot(year2016) + geom_sf(aes(fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)))+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, name="Vote over 50% ")
+ggplot(year2016) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)))+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ")
+
+```
+
+## Try a different year: 
+
+```{r}
+#plot for year 2016 dominant party in each county and by how much 
+ggplot(year1912) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ")
+```
+
+```{r}
+for (i in 1:28) {
+  
+
+g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ") + ggforce::facet_wrap_paginate(~election_year, ncol=1, nrow=1, page=i) 
+
+ggsave(paste0("electionmap", i, ".pdf"))
+
+}
+
+
+```
+
+```{r}
+#library(highcharter)
+#ds<- mergedelectiondata %>%
+  #mutate(value = ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)) %>% mutate(value=ifelse(is.na(value), NA, value)) %>% select(election_year, value, GEO_ID)
+  
+ 
+```
+
+```{r}
+#ds_prepared <- ds %>%
+  #group_by(GEO_ID) %>%
+  #summarise(
+    #data = list(
+      #sequence = value,
+      #year = election_year
+    #),
+    #.groups = 'drop'
+  #) %>%
+  #ungroup()
+
+#hc <- highchart(type = "map") %>% 
+  #hc_add_series(
+    #data = ds_prepared,
+    #name = "% vote over 50 for dominant party",
+    #mapData = mergedelectiondata,
+    #borderWidth = 0.01
+    #) %>% 
+  #hc_colorAxis(minColor= "blue", maxColor="red") %>%  
+  #hc_title(text = "Presidential Elections by county since 1912") %>% 
+  #hc_subtitle(text = "% over 50 for dominant party in county") %>% 
+  #hc_legend(
+    #layout = "horizontal",
+    #reversed = TRUE,
+    #floating = TRUE,
+    #align = "right"
+    #) %>% 
+  #hc_motion(
+    #enabled = TRUE,
+    #axisLabel = "year",
+    #labels = sort(unique(ds$election_year)),
+    #series = 0,
+    #updateIterval = 50,
+    #magnet = list(
+      #round = "floor",
+      #step = 0.1
+    #)
+  #) %>% 
+  #hc_chart(marginBottom  = 100)
 
 ```
