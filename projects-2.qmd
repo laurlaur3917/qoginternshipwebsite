@@ -33,67 +33,80 @@ us_data2<- us_data2 %>%
 us_data2<- us_data2 %>% 
   rename(county_name=NAME)     
 
-#make new variables to give republican and democrat % of vote, as well as statements to take the republican/democrat vote if over 50% 
-pres_elections_release<- pres_elections_release %>% 
-  mutate(republican_raw_votes_2perc= republican_raw_votes/pres_raw_county_vote_totals_two_party) %>% mutate(democratic_raw_votes_2perc= 1-republican_raw_votes_2perc) %>% mutate(republican_excess=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc-0.5, 0), democrat_excess= ifelse(democratic_raw_votes_2perc>0.5, democratic_raw_votes_2perc-0.5, 0), dominantparty= ifelse(republican_raw_votes_2perc > democratic_raw_votes_2perc, "Republican", "Democrat"))
+```
+
+Let's try to make the county data as similar as possible: exclude to continental US.
+
+```{r}
+us_data2<- us_data2 %>% filter(!STATE %in% c("02", "15", "60", "66", "69", "72", "78", "74"))
+pres_elections_release<- pres_elections_release %>% filter(!sfips %in% c("02", "15", "60", "66", "69", "72", "78", "74"))
+
 ```
 
 Let's carefully merge the data.
 
 ```{r}
-#merge on county_name 
 us_data2<- st_make_valid(us_data2)
 count<- us_data2 %>% count(GEO_ID)
-#every single county (3221) has one entry- yay!! 
+#every single county (3109) has one entry- yay!! 
 
 #double check: 
 
 unique_count<- us_data2 %>% pull(GEO_ID) %>% 
   unique() %>% length()
-#3221 unique geo-ids, yay! 
+#3109 unique geo-ids, which is same length of dataset. Yay! 
 
 #now move onto the next dataset: should be 39 of each entry for each election 1868-2020
 count2<- pres_elections_release %>% count(fips)
+#how many 39s do i have 
+count2 %>% count(n) %>% view()
 
-#after inspecting, 1912 seems like a good year to start. 
+county_summary<- pres_elections_release %>% group_by(election_year) %>% summarize(num_counties=n_distinct(fips))
+#1912 was the first year that there were all 48 states (excluding hawaii and alaska)
+#1912 was weird election year with former president teddy roosevelt running as a progressive, placing second. Start from 1914 where democrat and republican have been biggest two parties since. 
 
-dataafter1912<- pres_elections_release %>% filter(election_year >= 1912)
+##NOTE: there are some years where the majority of the state voted third party, this will make the difference between republican and democrat appear white. 
 
-#recount, now should have 28 entries. Lots of missing data. 
+dataafter1916<- pres_elections_release %>% filter(election_year >= 1916)
 
-count2<- dataafter1912 %>% count(fips)
+#recount, now should have 27 entries. Lots of missing data. 
 
+count2<- dataafter1916 %>% count(fips)
+
+#how many 27s do you have 
+count2 %>% count(n) %>% view()
 ```
 
 ```{r}
+#doesn't include missing year data, we want to add missing data so we can fill with NA
+
 #want to create year and fips columns and fill in our missing data with NA
 
 #all distinct fips codes, pull into a vector 
-fips_codes<- dataafter1912 %>% distinct(fips) %>% pull()
+fips_codes<- dataafter1916 %>% distinct(fips) %>% pull()
 #sequence every 4 years from 1912-2020
-election_years<- seq(1912, 2020, by=4)
+election_years<- seq(1916, 2020, by=4)
 #create data frame for all combinations of distinct fips and election years 
 complete_data<- expand.grid(fips= fips_codes, election_year= election_years) 
 
 #compares complete data with original data, returns rows that are not in original data
-missing_data<- complete_data %>% anti_join(dataafter1912, by=c("fips", "election_year"))
+missing_data<- complete_data %>% anti_join(dataafter1916, by=c("fips", "election_year"))
 
 #bind the missing rows with the original dataset
-newelectiondata<- bind_rows(dataafter1912, missing_data)
+newelectiondata<- bind_rows(dataafter1916, missing_data)
 
-#check counts again, should have 28 of each
+#check counts again, should have 27 of each
 
 count3<- newelectiondata %>% count(fips)
+count3 %>% count(n) %>% view()
 
-#now we are good! however there are 3131 entries, which might pose a problem merging with the other set. Let's see which ones are the issues: 
+#now we are good! there are 3125 entries which isn't that much more than our other dataset. Let's see which ones don't overlap. 
                                            
 ```
 
 ```{r}
 #make new column GEOID to match the us_data2 county identifier 
 newelectiondata<- newelectiondata %>%  mutate(GEO_ID= paste0("0500000US", fips))
-
-
 
 
 ```
@@ -106,6 +119,11 @@ newelectiondata<- newelectiondata %>%  mutate(GEO_ID= paste0("0500000US", fips))
 #name every unique ID which is not in us_data2, 17 values
 missingnewelectiondata<- (newelectiondata$GEO_ID %>% unique)[!(newelectiondata$GEO_ID %>% unique) %in% (us_data2$GEO_ID %>% unique)]
 
+#make a dataset to show years
+missing_geo_ids<- newelectiondata %>% filter(GEO_ID %in% missingnewelectiondata)
+
+#this is dade, florida (changed to miami dade after 1996 election); campbell, georgia (ceased to exist after 1928 election); Milton, GA (merged with Fulton after 1932); Ormsby, NV (county until 1969); armstrong, SD (county until 1952); ogala lakota, sd (renamed county after 2014); washabaugh, sd (merged after 1976 election); washington sd (until 1943); elizabeth city, va (merged in 1952); nansemond, va (extinct after 1972); norfolk, va (changed to chesapeake in 1963); princess anne, va (merged in 1963); warwick, va (merged 1952); clifton forge, va (merged w allegheny in 2001); south boston city, va (merged in 1996); south norfolk city, va (beccame chesapeake with norfolk in 1963)
+
 
 #check other way around 
 (us_data2$GEO_ID %>% unique) %in% (newelectiondata$GEO_ID %>% unique)
@@ -113,7 +131,208 @@ missingnewelectiondata<- (newelectiondata$GEO_ID %>% unique)[!(newelectiondata$G
 #check which values aren't in election data
 missingusdata2<- (us_data2$GEO_ID %>% unique)[!(us_data2$GEO_ID %>% unique) %in% (newelectiondata$GEO_ID %>% unique)]
 
+#none! 
 
+
+
+```
+
+```{r}
+#single name changes
+newelectiondata<- newelectiondata %>% mutate(GEO_ID=ifelse(GEO_ID=="0500000US12025", "0500000US12086", GEO_ID)) %>% mutate(GEO_ID=ifelse(county_name=="OGALA LAKOTA", "0500000US46113", GEO_ID)) %>% mutate(GEO_ID= ifelse(county_name=="ORMSBY", "0500000US32510", GEO_ID))
+
+#drop no-longer existing or merged into several different counties
+newelectiondata<- newelectiondata %>% filter(!GEO_ID %in% c("0500000US13041", "0500000US46133"))
+```
+
+```{r}
+#take the years that milton exists, change GEOID/rename to Fulton, and add the Milton & Fulton values together 
+milton <- newelectiondata %>% filter(GEO_ID %in% c("0500000US13203", "0500000US13121") & election_year %in% c(1916, 1920, 1924, 1928)) %>% mutate(GEO_ID= ifelse(county_name=="MILTON",  "0500000US13121", GEO_ID), county_name= ifelse(county_name=="MILTON", "FULTON", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out Milton and Fulton in relevant years 
+miltonfultonout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US13203", "0500000US13121") & election_year %in% c(1916, 1920, 1924, 1928)))
+
+#bind new data into the set with Milton/Fulton filtered out in relevant years 
+newelectiondata <- bind_rows(milton, miltonfultonout)
+
+```
+
+```{r}
+#repeat process for armstrong->dewey county, SD
+
+armstrong <- newelectiondata %>% filter(GEO_ID %in% c("0500000US46001", "0500000US46041") & election_year %in% c(1928, 1932, 1936, 1940, 1944, 1948, 1952)) %>%
+  mutate(GEO_ID= ifelse(county_name=="ARMSTRONG" & state=="SD", "0500000US46041", GEO_ID), county_name= ifelse(county_name=="ARMSTRONG" & state=="SD", "DEWEY", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out dewey and armstrong in relevant years 
+deweyfilterout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US46001", "0500000US46041") & election_year %in% c(1928, 1932, 1936, 1940, 1944, 1948, 1952)))
+
+#bind new data into the set with Armstrong/Dewey filtered out in relevant years 
+newelectiondata <- bind_rows(armstrong, deweyfilterout)
+```
+
+```{r}
+#combine south norfolk city, va and norfolk, va to become chesapeake 
+norfolk <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51129", "0500000US51785") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960)) %>%
+  mutate(GEO_ID= ifelse(GEO_ID=="0500000US51129", "0500000US51550", GEO_ID), county_name= ifelse(county_name=="NORFOLK" & state=="VA", "CHESAPEAKE", county_name), GEO_ID= ifelse(GEO_ID=="0500000US51785", "0500000US51550", GEO_ID), county_name= ifelse(county_name=="SOUTH NORFOLK CITY" & state=="VA", "CHESAPEAKE", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out norfolks in relevant years 
+norfolkfilterout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US51129", "0500000US51785") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960)))
+
+#bind new data into the set with norfolks filtered out in relevant years 
+newelectiondata <- bind_rows(norfolk, norfolkfilterout)
+
+```
+
+```{r}
+#south boston city-> halifax, va (merged in 1996); 
+southbostoncity <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51780", "0500000US51083") & election_year %in% c(1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988, 1992)) %>%
+  mutate(GEO_ID= ifelse(county_name=="SOUTH BOSTON CITY" | county_name=="SOUTH BOSTON", "0500000US51083", GEO_ID), county_name= ifelse(county_name=="SOUTH BOSTON CITY" | county_name=="SOUTH BOSTON", "HALIFAX", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out sbc in relevant years 
+sbcfilterout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US51780", "0500000US51083") & election_year %in% c(1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988, 1992)))
+
+#bind new data into the set with SBC/halifax filtered out in relevant years 
+newelectiondata <- bind_rows(southbostoncity, sbcfilterout)
+
+```
+
+```{r}
+#Clifton forge va-> alleghany 
+cliftonforge <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51560", "0500000US51005") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000)) %>%
+  mutate(GEO_ID= ifelse(county_name=="CLIFTON FORGE" | county_name=="CLIFTON FORGE CITY", "0500000US51005", GEO_ID), county_name= ifelse(county_name=="CLIFTON FORGE" | county_name=="CLIFTON FORGE CITY", "ALLEGHANY", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out in relevant years 
+clifforgeout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US51560", "0500000US51005") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000)))
+
+#bind new data into the set with clifton forge/alleghany filtered out in relevant years 
+newelectiondata <- bind_rows(cliftonforge, clifforgeout)
+
+```
+
+```{r}
+#warwick, va -> newport news
+warwick <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51189", "0500000US51700") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948)) %>%
+  mutate(GEO_ID= ifelse(county_name=="WARWICK", "0500000US51700", GEO_ID), county_name= ifelse(county_name=="WARWICK", "NEWPORT NEWS", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+
+#filter out in relevant years 
+warwickout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US51189", "0500000US51700") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948)))
+
+#bind new data into the set with warwick/nn filtered out in relevant years 
+newelectiondata <- bind_rows(warwick, warwickout)
+
+
+```
+
+```{r}
+#nansemond-> suffolk va 
+
+nansemond <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51123", "0500000US51800") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968)) %>%
+  mutate(GEO_ID= ifelse(county_name=="NANSEMOND", "0500000US51800", GEO_ID), county_name= ifelse(county_name=="NANSEMOND", "SUFFOLK", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+
+#filter out in relevant years 
+nansout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US51123", "0500000US51800") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968)))
+
+#bind new data into the set with nan/suffolk filtered out in relevant years 
+newelectiondata <- bind_rows(nansemond, nansout)
+
+```
+
+```{r}
+#elizabeth city-> hampton 
+
+elizabethcity <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51055", "0500000US51650") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948)) %>%
+  mutate(GEO_ID= ifelse(county_name=="ELIZABETH CITY", "0500000US51650", GEO_ID), county_name= ifelse(county_name=="ELIZABETH CITY", "HAMPTON", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out in relevant years 
+elizabethcityout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US51055", "0500000US51650") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948)))
+
+#bind new data into the set with princess anne/vb filtered out in relevant years 
+newelectiondata <- bind_rows(elizabethcity, elizabethcityout)
+
+```
+
+```{r}
+#repeat process for washabaugh-> jackson county SD
+washabaugh <- newelectiondata %>% filter(GEO_ID %in% c("0500000US46131", "0500000US46071") & election_year %in% c(1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968, 1972, 1976)) %>%
+  mutate(GEO_ID= ifelse(county_name=="WASHABAUGH", "0500000US46071", GEO_ID), county_name= ifelse(county_name=="WASHABAUGH", "JACKSON", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out dewey and armstrong in relevant years 
+washabaughfilterout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US46131", "0500000US46071") & election_year %in% c(1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968, 1972, 1976)))
+
+#bind new data into the set with Washabaugh/Jackson filtered out in relevant years 
+newelectiondata <- bind_rows(washabaugh, washabaughfilterout)
+```
+
+```{r}
+#princess anne, va-> virginia beach
+
+#change princess anne to virginia beach in years outside overlapping years 
+namechange<- newelectiondata %>% filter(GEO_ID== "0500000US51151" & election_year %in% c(1916,1920,1924,1928,1932,1936,1940,1944,1948)) %>% mutate(GEO_ID= ifelse(county_name=="PRINCESS ANNE", "0500000US51810", GEO_ID), county_name= ifelse(county_name=="PRINCESS ANNE", "VIRGINIA BEACH", county_name)) 
+
+#take overlapping years that virginia beach and princess anne existed
+princessanne <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51151", "0500000US51810") & election_year %in% c(1952, 1956, 1960)) %>%
+  mutate(GEO_ID= ifelse(county_name=="PRINCESS ANNE", "0500000US51810", GEO_ID), county_name= ifelse(county_name=="PRINCESS ANNE", "VIRGINIA BEACH", county_name)) %>%
+  group_by(county_name, election_year, GEO_ID) %>% 
+  summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
+
+#filter out in relevant years 
+princessanneout <- newelectiondata %>%
+  filter(!(GEO_ID %in% c("0500000US51151", "0500000US51810") & election_year %in% c(1952, 1956, 1960)))
+
+#bind new data into the set with princess anne/vb filtered out in relevant years 
+newelectiondata <- bind_rows(princessanne, princessanneout, namechange)
+
+
+```
+
+```{r}
+#| results: hide
+#recheck
+(newelectiondata$GEO_ID %>% unique)[!(newelectiondata$GEO_ID %>% unique) %in% (us_data2$GEO_ID %>% unique)]
+
+#seems to double include princess anne, unrecognized GEOID. 
+
+newelectiondata<- newelectiondata %>% filter(!(GEO_ID %in% c("0500000US51151", "0500000USNA")))
+
+#recheck again- good now. 
+(newelectiondata$GEO_ID %>% unique)[!(newelectiondata$GEO_ID %>% unique) %in% (us_data2$GEO_ID %>% unique)]
+
+(us_data2$GEO_ID %>% unique)[!(us_data2$GEO_ID %>% unique) %in% (newelectiondata$GEO_ID %>% unique)]
+```
+
+```{r}
+#make new variables to give republican and democrat % of vote, as well as statements to take the republican/democrat vote if over 50% 
+newelectiondata<- newelectiondata %>% 
+  mutate(republican_raw_votes_2perc= republican_raw_votes/pres_raw_county_vote_totals_two_party) %>% mutate(democratic_raw_votes_2perc= 1-republican_raw_votes_2perc) %>% mutate(republican_excess=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc-0.5, 0), democrat_excess= ifelse(democratic_raw_votes_2perc>0.5, democratic_raw_votes_2perc-0.5, 0), dominantparty= ifelse(republican_raw_votes_2perc > democratic_raw_votes_2perc, "Republican", "Democrat"))
 
 
 ```
@@ -131,7 +350,7 @@ year2016<- mergedelectiondata %>%
 ```
 
 ```{r}
-year1912<- mergedelectiondata %>%  filter(election_year==1912)
+year1916<- mergedelectiondata %>%  filter(election_year==1916)
 ```
 
 ## 2016 election plot:
@@ -142,20 +361,27 @@ ggplot(year2016) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_vot
 
 ```
 
-## Try a different year: 
+## Try a different year:
 
 ```{r}
 #plot for year 2016 dominant party in each county and by how much 
-ggplot(year1912) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ")
+ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ")
 ```
 
 ```{r}
-for (i in 1:28) {
+#arrange so that ggplot title works correctly 
+mergedelectiondata<- mergedelectiondata %>% arrange(election_year)
+```
+
+```{r}
+for (i in 1:27) {
   
 
-g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ") + ggforce::facet_wrap_paginate(~election_year, ncol=1, nrow=1, page=i) 
+current_year<- unique(mergedelectiondata$election_year)[i]
 
-ggsave(paste0("electionmap", i, ".pdf"))
+g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ") + ggforce::facet_wrap_paginate(~election_year, ncol=1, nrow=1, page=i) + coord_sf(xlim = c(-140, -60)) + labs(title=paste("Election Year:", current_year)) + theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "right", panel.background = element_blank(), axis.text = element_blank(),axis.ticks = element_blank(),     axis.title = element_blank(), panel.grid = element_blank())
+
+#ggsave(paste0("electionmap", i, ".pdf"), plot=g, width=10, height=8)
 
 }
 
