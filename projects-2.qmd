@@ -1,5 +1,6 @@
 ---
-title: "project #2"
+title: "project #2: Merging data to create a US election map"
+
 execute: 
   warning: false
   message: false
@@ -10,7 +11,7 @@ format:
     code-fold: true 
 ---
 
-### Now let's load some election data and plot it:
+### Now let's load some election data and map data and plot it:
 
 ```{r}
 library(sf)
@@ -18,12 +19,16 @@ library(ggplot2)
 library(leaflet)
 library(tidyverse)
 library(ggthemes)
-load("~/Downloads/dataverse_shareable_presidential_county_returns_1868_2020.Rdata")
-us_data2<- st_read("/Users/laurengerber/Downloads/gz_2010_us_050_00_5m.json", quiet=TRUE)
+
+load("data/dataverse_shareable_presidential_county_returns_1868_2020.Rdata")
+us_data2<- st_read("data/gz_2010_us_050_00_5m.json", quiet=TRUE)
+
 
 #replace non-printable characters with blank space
 us_data2$NAME <- str_replace_all(us_data2$NAME, "[^[:print:]]", "")
 ```
+
+#### Let's change the map data "name" column to match the election data "county_name" column. We need to make the name uppercase and rename it "county_name". {style="color:teal;"}
 
 ```{r}
 #mutate names to upper in the map data to match the election data 
@@ -35,17 +40,24 @@ us_data2<- us_data2 %>%
 
 ```
 
-Let's try to make the county data as similar as possible: exclude to continental US.
+#### Let's try to make the map and election data as similar as possible: exclude to only counties in the continental US. {style="color:teal;"}
 
 ```{r}
+#these are the state codes for hawaii, alaska, and other territories
+
+#Let's try to make the county data as similar as possible: exclude to continental US.
+
 us_data2<- us_data2 %>% filter(!STATE %in% c("02", "15", "60", "66", "69", "72", "78", "74"))
 pres_elections_release<- pres_elections_release %>% filter(!sfips %in% c("02", "15", "60", "66", "69", "72", "78", "74"))
 
 ```
 
-Let's carefully merge the data.
+#### Let's first begin the merge process by first checking if every county in map data only has one unique identifier/code. Next, we should have 39 codes for each county in the election data, because there have been 39 election cycles included in the data (1868-2020). {style="color:teal;"}
+
+##### Since there historically has been less counties, we will filter the data to start in the 1916 election. This is because 1912 is the first election year that the entire continental US was included. However, in 1912 there were three candidates and the "Progressive" party came in second. Since 1916, Democrats and Republicans have been the two largest parties in the elections. Because our data only includes Democratic and Republican votes, I've chosen to start from 1916 for these reasons. {style="color:cornflowerblue;"}
 
 ```{r}
+#checking map data 
 us_data2<- st_make_valid(us_data2)
 count<- us_data2 %>% count(GEO_ID)
 #every single county (3109) has one entry- yay!! 
@@ -55,6 +67,31 @@ count<- us_data2 %>% count(GEO_ID)
 unique_count<- us_data2 %>% pull(GEO_ID) %>% 
   unique() %>% length()
 #3109 unique geo-ids, which is same length of dataset. Yay! 
+
+#now move onto the next dataset: since we have 39 election cycles, we should have 39 of each entry for each election 1868-2020.
+count2<- pres_elections_release %>% count(fips)
+
+#We clearly do not have 39s for every value. How many 39s do i have? 
+count2 %>% count(n) %>% view()
+
+#View how many counties were in each election year
+county_summary<- pres_elections_release %>% group_by(election_year) %>% summarize(num_counties=n_distinct(fips))
+
+#Historically, 1912 was the first year that there were all 48 states (excluding hawaii and alaska). 
+#1912 was a weird election year with former president teddy roosevelt running as a progressive, placing second. Since 1914, Democrat and Republicans have been two biggest parties.
+
+##NOTE: there are some years where the majority of the state voted third party, this will make intensity of vote for Republican/Democrat appear less intense. 
+
+
+#Let's filter data to include election cycles 1916-2020 
+dataafter1916<- pres_elections_release %>% filter(election_year >= 1916)
+
+#recount, now we should have 27 entries for each year. Lots of missing data. 
+
+count2<- dataafter1916 %>% count(fips)
+
+#how many 27s do we have 
+count2 %>% count(n) %>% view()
 
 #now move onto the next dataset: should be 39 of each entry for each election 1868-2020
 count2<- pres_elections_release %>% count(fips)
@@ -75,7 +112,11 @@ count2<- dataafter1916 %>% count(fips)
 
 #how many 27s do you have 
 count2 %>% count(n) %>% view()
+
+
 ```
+
+#### Even starting from 1916, we do not have 27 entries for each election year. This is because many counties in 2020 did not historically exist. However, we still want to include this data. The next step is to make a full data set with every county 27 times, even if it does not include data. {style="color:teal;"}
 
 ```{r}
 #doesn't include missing year data, we want to add missing data so we can fill with NA
@@ -92,6 +133,9 @@ complete_data<- expand.grid(fips= fips_codes, election_year= election_years)
 #compares complete data with original data, returns rows that are not in original data
 missing_data<- complete_data %>% anti_join(dataafter1916, by=c("fips", "election_year"))
 
+
+#combines the missing rows with the original dataset
+
 #bind the missing rows with the original dataset
 newelectiondata<- bind_rows(dataafter1916, missing_data)
 
@@ -100,9 +144,12 @@ newelectiondata<- bind_rows(dataafter1916, missing_data)
 count3<- newelectiondata %>% count(fips)
 count3 %>% count(n) %>% view()
 
-#now we are good! there are 3125 entries which isn't that much more than our other dataset. Let's see which ones don't overlap. 
                                            
 ```
+
+#### Now every county has 27 entries- we are good! There are 3125 (not including NA) counties which isn't that much more than our other data set (3109). Let's see which ones don't overlap. {style="color:teal;'"}
+
+##### First, we need to make a column to compare the counties in the data sets on. "GEO_ID" in our map data is just "00500000US" + the fips code that exists in our election data set. Using that, we can easily make a matching GEO_ID in our election data. {style="color:cornflowerblue;"}
 
 ```{r}
 #make new column GEOID to match the us_data2 county identifier 
@@ -110,6 +157,8 @@ newelectiondata<- newelectiondata %>%  mutate(GEO_ID= paste0("0500000US", fips))
 
 
 ```
+
+#### Now we will check if every GEO_ID in our election data is in our map data and vice versa, identifying the ones which aren't. {style="color:teal;"}
 
 ```{r}
 #| results: hide
@@ -119,8 +168,16 @@ newelectiondata<- newelectiondata %>%  mutate(GEO_ID= paste0("0500000US", fips))
 #name every unique ID which is not in us_data2, 17 values
 missingnewelectiondata<- (newelectiondata$GEO_ID %>% unique)[!(newelectiondata$GEO_ID %>% unique) %in% (us_data2$GEO_ID %>% unique)]
 
+
+#make a dataset to show election data not in map data 
+missing_geo_ids<- newelectiondata %>% filter(GEO_ID %in% missingnewelectiondata)
+
+#do some research into the counties:
+
+
 #make a dataset to show years
 missing_geo_ids<- newelectiondata %>% filter(GEO_ID %in% missingnewelectiondata)
+
 
 #this is dade, florida (changed to miami dade after 1996 election); campbell, georgia (ceased to exist after 1928 election); Milton, GA (merged with Fulton after 1932); Ormsby, NV (county until 1969); armstrong, SD (county until 1952); ogala lakota, sd (renamed county after 2014); washabaugh, sd (merged after 1976 election); washington sd (until 1943); elizabeth city, va (merged in 1952); nansemond, va (extinct after 1972); norfolk, va (changed to chesapeake in 1963); princess anne, va (merged in 1963); warwick, va (merged 1952); clifton forge, va (merged w allegheny in 2001); south boston city, va (merged in 1996); south norfolk city, va (beccame chesapeake with norfolk in 1963)
 
@@ -131,11 +188,13 @@ missing_geo_ids<- newelectiondata %>% filter(GEO_ID %in% missingnewelectiondata)
 #check which values aren't in election data
 missingusdata2<- (us_data2$GEO_ID %>% unique)[!(us_data2$GEO_ID %>% unique) %in% (newelectiondata$GEO_ID %>% unique)]
 
-#none! 
-
-
+#none!
 
 ```
+
+#### Our check has shown that every map GEO_ID is in election data, but 17 election data GEO_ID's are not in the map data. After some research, I have found that some counties have simply changed their names and either the new name or old name is in the map data set. (dade-\>miami dade, shannon-\>ogala lakota, ormsby-\>carson city). We will change these names/ID's in the election data to reflect which name/ID is in the map data. {style="color:teal;"}
+
+##### Second, some counties (Campbell GA, Washington SD) have ceased to exist or merged into several counties, making it hard to include in the data. We will simply drop these counties. {style="color:cornflowerblue;"}
 
 ```{r}
 #single name changes
@@ -144,6 +203,8 @@ newelectiondata<- newelectiondata %>% mutate(GEO_ID=ifelse(GEO_ID=="0500000US120
 #drop no-longer existing or merged into several different counties
 newelectiondata<- newelectiondata %>% filter(!GEO_ID %in% c("0500000US13041", "0500000US46133"))
 ```
+
+#### For the rest of the counties, they have merged together in later years. For these, we will take the years that both of the counties exist and add the vote totals together, changing the name and ID to the merged county. We will start with Milton and Fulton, which is now just Fulton, GA. {style="color:teal;"}
 
 ```{r}
 #take the years that milton exists, change GEOID/rename to Fulton, and add the Milton & Fulton values together 
@@ -159,6 +220,8 @@ miltonfultonout <- newelectiondata %>%
 newelectiondata <- bind_rows(milton, miltonfultonout)
 
 ```
+
+#### Repeat the process for Armstrong and Dewey, now just Dewey, SD. {style="color:teal;"}
 
 ```{r}
 #repeat process for armstrong->dewey county, SD
@@ -176,6 +239,8 @@ deweyfilterout <- newelectiondata %>%
 newelectiondata <- bind_rows(armstrong, deweyfilterout)
 ```
 
+#### Repeat the process for South Norfolk City and Norfolk, which are now together Chesapeake, VA. {style="color:teal;"}
+
 ```{r}
 #combine south norfolk city, va and norfolk, va to become chesapeake 
 norfolk <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51129", "0500000US51785") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960)) %>%
@@ -191,6 +256,8 @@ norfolkfilterout <- newelectiondata %>%
 newelectiondata <- bind_rows(norfolk, norfolkfilterout)
 
 ```
+
+#### Repeat the process for South Boston City and Halifax, now just Halifax, VA. {style="color:teal;"}
 
 ```{r}
 #south boston city-> halifax, va (merged in 1996); 
@@ -208,6 +275,8 @@ newelectiondata <- bind_rows(southbostoncity, sbcfilterout)
 
 ```
 
+#### Repeat process for Clifton Forge and Alleghany, now just Alleghany, VA. {style="color:teal;"}
+
 ```{r}
 #Clifton forge va-> alleghany 
 cliftonforge <- newelectiondata %>% filter(GEO_ID %in% c("0500000US51560", "0500000US51005") & election_year %in% c(1916, 1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000)) %>%
@@ -223,6 +292,8 @@ clifforgeout <- newelectiondata %>%
 newelectiondata <- bind_rows(cliftonforge, clifforgeout)
 
 ```
+
+#### Repeat the process for Warwick and Newport News, now just Newport News, VA. {style="color:teal;"}
 
 ```{r}
 #warwick, va -> newport news
@@ -242,6 +313,8 @@ newelectiondata <- bind_rows(warwick, warwickout)
 
 ```
 
+#### Repeat the process for Nansemond and Suffolk, now just Suffolk, VA. {style="color:teal;"}
+
 ```{r}
 #nansemond-> suffolk va 
 
@@ -260,6 +333,8 @@ newelectiondata <- bind_rows(nansemond, nansout)
 
 ```
 
+#### Repeat the process for Elizabeth City and Hampton, now just Hampton, VA. {style="color:teal;"}
+
 ```{r}
 #elizabeth city-> hampton 
 
@@ -277,6 +352,8 @@ newelectiondata <- bind_rows(elizabethcity, elizabethcityout)
 
 ```
 
+#### Repeat process for Washabaugh and Jackson County, now just Jackson, SD. {style="color:teal;"}
+
 ```{r}
 #repeat process for washabaugh-> jackson county SD
 washabaugh <- newelectiondata %>% filter(GEO_ID %in% c("0500000US46131", "0500000US46071") & election_year %in% c(1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968, 1972, 1976)) %>%
@@ -284,13 +361,15 @@ washabaugh <- newelectiondata %>% filter(GEO_ID %in% c("0500000US46131", "050000
   group_by(county_name, election_year, GEO_ID) %>% 
   summarize(across(c(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, na.rm=TRUE), .groups= 'drop')
 
-#filter out dewey and armstrong in relevant years 
+#filter out in relevant years 
 washabaughfilterout <- newelectiondata %>%
   filter(!(GEO_ID %in% c("0500000US46131", "0500000US46071") & election_year %in% c(1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964, 1968, 1972, 1976)))
 
 #bind new data into the set with Washabaugh/Jackson filtered out in relevant years 
 newelectiondata <- bind_rows(washabaugh, washabaughfilterout)
 ```
+
+#### Repeat process for Princess Anne and Virginia Beach, now just Virginia Beach, VA. {style="color:teal;"}
 
 ```{r}
 #princess anne, va-> virginia beach
@@ -314,12 +393,16 @@ newelectiondata <- bind_rows(princessanne, princessanneout, namechange)
 
 ```
 
+#### Recheck again with changes that every election GEO_ID is in map set and vice versa. {style="color:teal;"}
+
 ```{r}
 #| results: hide
 #recheck
 (newelectiondata$GEO_ID %>% unique)[!(newelectiondata$GEO_ID %>% unique) %in% (us_data2$GEO_ID %>% unique)]
 
-#seems to double include princess anne, unrecognized GEOID. 
+
+#seems to double include princess anne, unrecognized GEOID. Drop this from our data
+
 
 newelectiondata<- newelectiondata %>% filter(!(GEO_ID %in% c("0500000US51151", "0500000USNA")))
 
@@ -329,6 +412,8 @@ newelectiondata<- newelectiondata %>% filter(!(GEO_ID %in% c("0500000US51151", "
 (us_data2$GEO_ID %>% unique)[!(us_data2$GEO_ID %>% unique) %in% (newelectiondata$GEO_ID %>% unique)]
 ```
 
+#### Now that everything matches, let's make new variables in our election data set representing the percentage of Democrat and Republican vote, the dominant party (party who won each county), and by how much they won (the percent over 50%). {style="color:teal;"}
+
 ```{r}
 #make new variables to give republican and democrat % of vote, as well as statements to take the republican/democrat vote if over 50% 
 newelectiondata<- newelectiondata %>% 
@@ -337,11 +422,15 @@ newelectiondata<- newelectiondata %>%
 
 ```
 
+#### Now we can finally merge our map and election data on GEO_ID. {style="color:teal;"}
+
 ```{r}
 #now lets finally merge the data 
 
 mergedelectiondata<- full_join(newelectiondata, us_data2, by="GEO_ID")
 ```
+
+#### Let's filter our data to just 2016 & 1916 to try two different individual election plots {style="color:teal;"}
 
 ```{r}
 #filter to 2016 
@@ -352,6 +441,36 @@ year2016<- mergedelectiondata %>%
 ```{r}
 year1916<- mergedelectiondata %>%  filter(election_year==1916)
 ```
+
+## 2016 election plot: first, simply who won each county.
+
+```{r}
+ggplot(year2016) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, "Republican", "Democrat"))) + scale_fill_manual(values= c("Republican"= "red", "Democrat"="blue"), name= "Winning Party") + ggthemes::theme_map()
+```
+
+#### This is a bit misleading so let's plot by how much they won: {style="color:teal;"}
+
+```{r}
+#plot for year 2016 dominant party in each county and by how much 
+ggplot(year2016) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc, -democratic_raw_votes_2perc))) + scale_fill_gradient2(low="blue", high="red", limits=c(-1,1), labels= scales::percent, name="Winning Party Vote %") + ggthemes::theme_map() + theme(legend.position = "right")
+
+```
+
+## Try a different year, 1916:
+
+```{r}
+#plot for year 1916 who won
+ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, "Republican", "Democrat"))) + scale_fill_manual(values= c("Republican"= "red", "Democrat"="blue"), name= "Winning Party") + ggthemes::theme_map()
+```
+
+#### And again by how much in 1916: {style="color:teal;"}
+
+```{r}
+ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc, -democratic_raw_votes_2perc))) + scale_fill_gradient2(low="blue", high="red", limits=c(-1,1), labels= scales::percent, name="Winning Party Vote %") + ggthemes::theme_map() + theme(legend.position = "right")
+
+```
+
+#### Arrange our data by year so that it is in chronological order: {style="color:teal;"}
 
 ## 2016 election plot:
 
@@ -373,13 +492,17 @@ ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_vot
 mergedelectiondata<- mergedelectiondata %>% arrange(election_year)
 ```
 
+#### Make a map for every single year (more efficiently in a for loop) and save it!: {style="color:teal;"}
+
 ```{r}
 for (i in 1:27) {
   
 
 current_year<- unique(mergedelectiondata$election_year)[i]
 
-g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ") + ggforce::facet_wrap_paginate(~election_year, ncol=1, nrow=1, page=i) + coord_sf(xlim = c(-140, -60)) + labs(title=paste("Election Year:", current_year)) + theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "right", panel.background = element_blank(), axis.text = element_blank(),axis.ticks = element_blank(),     axis.title = element_blank(), panel.grid = element_blank())
+
+g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc, -democratic_raw_votes_2perc)), size=0.01)+ scale_fill_gradient2(low="blue", high="red",limits=c(-1,1), midpoint=0, na.value = "gray20", labels= scales::percent, name="Winning Party Vote %") + ggforce::facet_wrap_paginate(~election_year, ncol=1, nrow=1, page=i) + coord_sf(xlim = c(-140, -60)) + labs(title=paste("Election Year:", current_year)) + theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "right", panel.background = element_blank(), axis.text = element_blank(),axis.ticks = element_blank(),     axis.title = element_blank(), panel.grid = element_blank())
+
 
 #ggsave(paste0("electionmap", i, ".pdf"), plot=g, width=10, height=8)
 

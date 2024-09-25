@@ -24,7 +24,7 @@ library(ggthemes)
 
 
 #us county map
-us_data <- st_read("/Users/laurengerber/Downloads/US_Counties/US_COUNTIES_ACS_2014.shp", quiet=TRUE)
+us_data <- st_read("data/US_Counties/US_COUNTIES_ACS_2014.shp", quiet=TRUE)
 
  ggplot(data = us_data) +
   geom_sf(lwd=0.03) +
@@ -56,12 +56,12 @@ leaflet(data=county_map) %>%
 
 ## Trying from another, more complicated source: <https://github.com/generalpiston/geojson-us-city-boundaries>
 
-#### Note: I'm commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. If you want to try at home feel free to copy the code.
+#### Note: I'm commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. I mainly just wanted to learn how to read in more complicated file types. If you want to try at home feel free to download the data from the link above. 
 
 First, starting with state data:
 
 ```{r}
-#states_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/states"
+#states_dir<- "data/geojson-us-city-boundaries-master/states"
 
 #takes the main folder states_dir and lists every file ending in .json
 #states_files<- list.files(states_dir, pattern= "\\.json$", full.names=TRUE)
@@ -90,13 +90,13 @@ Testing shape files:
 
 ```{r}
 #Path to shape folder 
-#shape_dir<- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
+#shape_dir<- "data/geojson-us-city-boundaries-master/shapes"
 
 #List all the zip files in the shape folder
 #zip_files<- list.files(shape_dir, pattern="\\.zip$", full.names= TRUE)
 
 #set to unzip the folders in the shape folder 
-#unzip_dir <- "/Users/laurengerber/Downloads/geojson-us-city-boundaries-master/shapes"
+#unzip_dir <- "data/geojson-us-city-boundaries-master/shapes"
 
 #for every zip_file in zip_files list, unzip and save in the shape folder 
 #for (zip_file in zip_files) {
@@ -119,7 +119,7 @@ I tried to plot these as well, but It's too big and don't think it's exactly the
 <https://eric.clst.org/tech/usgeojson/>: adapted from the United States Census Cartographic Boundary Files. Let's try the 5m US County Boundaries.
 
 ```{r}
-us_data2<- st_read("/Users/laurengerber/Downloads/gz_2010_us_050_00_5m.json", quiet=TRUE)
+us_data2<- st_read("data/gz_2010_us_050_00_5m.json", quiet=TRUE)
 
 ggplot() +
   geom_sf(data=us_data2, lwd=0.04) +
