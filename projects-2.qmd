@@ -472,21 +472,6 @@ ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_vot
 
 #### Arrange our data by year so that it is in chronological order: {style="color:teal;"}
 
-## 2016 election plot:
-
-```{r}
-#plot for year 2016 dominant party in each county and by how much 
-ggplot(year2016) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)))+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ")
-
-```
-
-## Try a different year:
-
-```{r}
-#plot for year 2016 dominant party in each county and by how much 
-ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)), size=0.01)+ scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, na.value = "gray20", name="Vote over 50% ")
-```
-
 ```{r}
 #arrange so that ggplot title works correctly 
 mergedelectiondata<- mergedelectiondata %>% arrange(election_year)
