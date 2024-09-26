@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>project #2 – laurenswebsite</title>
+<title>project #2: Merging data to create a US election map – laurenswebsite</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -147,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./projects-2.html">project #2</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./projects-2.html">project #2: Merging data to create a US election map</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -157,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">project #2</h1>
+      <h1 class="title">project #2: Merging data to create a US election map</h1>
                       </div>
   </div>
     
@@ -190,7 +190,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./projects-2.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">project #2</span></a>
+ <span class="menu-text">project #2: Merging data to create a US election map</span></a>
   </div>
 </li>
     </ul>
@@ -203,9 +203,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#now-lets-load-some-election-data-and-plot-it" id="toc-now-lets-load-some-election-data-and-plot-it" class="nav-link active" data-scroll-target="#now-lets-load-some-election-data-and-plot-it">Now let’s load some election data and plot it:</a></li>
-  <li><a href="#election-plot" id="toc-election-plot" class="nav-link" data-scroll-target="#election-plot">2016 election plot:</a></li>
-  <li><a href="#try-a-different-year" id="toc-try-a-different-year" class="nav-link" data-scroll-target="#try-a-different-year">Try a different year:</a></li>
+  <li><a href="#now-lets-load-some-election-data-and-map-data-and-plot-it" id="toc-now-lets-load-some-election-data-and-map-data-and-plot-it" class="nav-link active" data-scroll-target="#now-lets-load-some-election-data-and-map-data-and-plot-it">Now let’s load some election data and map data and plot it:</a></li>
+  <li><a href="#election-plot-first-simply-who-won-each-county." id="toc-election-plot-first-simply-who-won-each-county." class="nav-link" data-scroll-target="#election-plot-first-simply-who-won-each-county.">2016 election plot: first, simply who won each county.</a></li>
+  <li><a href="#try-a-different-year-1916" id="toc-try-a-different-year-1916" class="nav-link" data-scroll-target="#try-a-different-year-1916">Try a different year, 1916:</a></li>
   </ul>
 </nav>
     </div>
@@ -216,8 +216,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="now-lets-load-some-election-data-and-plot-it" class="level3">
-<h3 class="anchored" data-anchor-id="now-lets-load-some-election-data-and-plot-it">Now let’s load some election data and plot it:</h3>
+<section id="now-lets-load-some-election-data-and-map-data-and-plot-it" class="level3">
+<h3 class="anchored" data-anchor-id="now-lets-load-some-election-data-and-map-data-and-plot-it">Now let’s load some election data and map data and plot it:</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -226,13 +226,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"~/Downloads/dataverse_shareable_presidential_county_returns_1868_2020.Rdata"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>us_data2<span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"/Users/laurengerber/Downloads/gz_2010_us_050_00_5m.json"</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#replace non-printable characters with blank space</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>us_data2<span class="sc">$</span>NAME <span class="ot">&lt;-</span> <span class="fu">str_replace_all</span>(us_data2<span class="sc">$</span>NAME, <span class="st">"[^[:print:]]"</span>, <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/dataverse_shareable_presidential_county_returns_1868_2020.Rdata"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>us_data2<span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/gz_2010_us_050_00_5m.json"</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#replace non-printable characters with blank space</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>us_data2<span class="sc">$</span>NAME <span class="ot">&lt;-</span> <span class="fu">str_replace_all</span>(us_data2<span class="sc">$</span>NAME, <span class="st">"[^[:print:]]"</span>, <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<section id="lets-change-the-map-data-name-column-to-match-the-election-data-county_name-column.-we-need-to-make-the-name-uppercase-and-rename-it-county_name." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="lets-change-the-map-data-name-column-to-match-the-election-data-county_name-column.-we-need-to-make-the-name-uppercase-and-rename-it-county_name.">Let’s change the map data “name” column to match the election data “county_name” column. We need to make the name uppercase and rename it “county_name”.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -244,49 +248,89 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">county_name=</span>NAME)     </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Let’s try to make the county data as similar as possible: exclude to continental US.</p>
+</section>
+<section id="lets-try-to-make-the-map-and-election-data-as-similar-as-possible-exclude-to-only-counties-in-the-continental-us." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="lets-try-to-make-the-map-and-election-data-as-similar-as-possible-exclude-to-only-counties-in-the-continental-us.">Let’s try to make the map and election data as similar as possible: exclude to only counties in the continental US.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>us_data2<span class="ot">&lt;-</span> us_data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>STATE <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"02"</span>, <span class="st">"15"</span>, <span class="st">"60"</span>, <span class="st">"66"</span>, <span class="st">"69"</span>, <span class="st">"72"</span>, <span class="st">"78"</span>, <span class="st">"74"</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pres_elections_release<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>sfips <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"02"</span>, <span class="st">"15"</span>, <span class="st">"60"</span>, <span class="st">"66"</span>, <span class="st">"69"</span>, <span class="st">"72"</span>, <span class="st">"78"</span>, <span class="st">"74"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#these are the state codes for hawaii, alaska, and other territories</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's try to make the county data as similar as possible: exclude to continental US.</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>us_data2<span class="ot">&lt;-</span> us_data2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>STATE <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"02"</span>, <span class="st">"15"</span>, <span class="st">"60"</span>, <span class="st">"66"</span>, <span class="st">"69"</span>, <span class="st">"72"</span>, <span class="st">"78"</span>, <span class="st">"74"</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>pres_elections_release<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>sfips <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"02"</span>, <span class="st">"15"</span>, <span class="st">"60"</span>, <span class="st">"66"</span>, <span class="st">"69"</span>, <span class="st">"72"</span>, <span class="st">"78"</span>, <span class="st">"74"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Let’s carefully merge the data.</p>
+</section>
+<section id="lets-first-begin-the-merge-process-by-first-checking-if-every-county-in-map-data-only-has-one-unique-identifiercode.-next-we-should-have-39-codes-for-each-county-in-the-election-data-because-there-have-been-39-election-cycles-included-in-the-data-1868-2020." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="lets-first-begin-the-merge-process-by-first-checking-if-every-county-in-map-data-only-has-one-unique-identifiercode.-next-we-should-have-39-codes-for-each-county-in-the-election-data-because-there-have-been-39-election-cycles-included-in-the-data-1868-2020.">Let’s first begin the merge process by first checking if every county in map data only has one unique identifier/code. Next, we should have 39 codes for each county in the election data, because there have been 39 election cycles included in the data (1868-2020).</h4>
+<section id="since-there-historically-has-been-less-counties-we-will-filter-the-data-to-start-in-the-1916-election.-this-is-because-1912-is-the-first-election-year-that-the-entire-continental-us-was-included.-however-in-1912-there-were-three-candidates-and-the-progressive-party-came-in-second.-since-1916-democrats-and-republicans-have-been-the-two-largest-parties-in-the-elections.-because-our-data-only-includes-democratic-and-republican-votes-ive-chosen-to-start-from-1916-for-these-reasons." class="level5" style="color:cornflowerblue;">
+<h5 style="color:cornflowerblue;" class="anchored" data-anchor-id="since-there-historically-has-been-less-counties-we-will-filter-the-data-to-start-in-the-1916-election.-this-is-because-1912-is-the-first-election-year-that-the-entire-continental-us-was-included.-however-in-1912-there-were-three-candidates-and-the-progressive-party-came-in-second.-since-1916-democrats-and-republicans-have-been-the-two-largest-parties-in-the-elections.-because-our-data-only-includes-democratic-and-republican-votes-ive-chosen-to-start-from-1916-for-these-reasons.">Since there historically has been less counties, we will filter the data to start in the 1916 election. This is because 1912 is the first election year that the entire continental US was included. However, in 1912 there were three candidates and the “Progressive” party came in second. Since 1916, Democrats and Republicans have been the two largest parties in the elections. Because our data only includes Democratic and Republican votes, I’ve chosen to start from 1916 for these reasons.</h5>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>us_data2<span class="ot">&lt;-</span> <span class="fu">st_make_valid</span>(us_data2)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>count<span class="ot">&lt;-</span> us_data2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(GEO_ID)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#every single county (3109) has one entry- yay!! </span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#double check: </span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>unique_count<span class="ot">&lt;-</span> us_data2 <span class="sc">%&gt;%</span> <span class="fu">pull</span>(GEO_ID) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#3109 unique geo-ids, which is same length of dataset. Yay! </span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#now move onto the next dataset: should be 39 of each entry for each election 1868-2020</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>count2<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#how many 39s do i have </span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>count2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>county_summary<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(election_year) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">num_counties=</span><span class="fu">n_distinct</span>(fips))</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#1912 was the first year that there were all 48 states (excluding hawaii and alaska)</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#1912 was weird election year with former president teddy roosevelt running as a progressive, placing second. Start from 1914 where democrat and republican have been biggest two parties since. </span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="do">##NOTE: there are some years where the majority of the state voted third party, this will make the difference between republican and democrat appear white. </span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>dataafter1916<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">filter</span>(election_year <span class="sc">&gt;=</span> <span class="dv">1916</span>)</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#checking map data </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>us_data2<span class="ot">&lt;-</span> <span class="fu">st_make_valid</span>(us_data2)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>count<span class="ot">&lt;-</span> us_data2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(GEO_ID)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#every single county (3109) has one entry- yay!! </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#double check: </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>unique_count<span class="ot">&lt;-</span> us_data2 <span class="sc">%&gt;%</span> <span class="fu">pull</span>(GEO_ID) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>() <span class="sc">%&gt;%</span> <span class="fu">length</span>()</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#3109 unique geo-ids, which is same length of dataset. Yay! </span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#now move onto the next dataset: since we have 39 election cycles, we should have 39 of each entry for each election 1868-2020.</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>count2<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#We clearly do not have 39s for every value. How many 39s do i have? </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>count2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#View how many counties were in each election year</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>county_summary<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(election_year) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">num_counties=</span><span class="fu">n_distinct</span>(fips))</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#Historically, 1912 was the first year that there were all 48 states (excluding hawaii and alaska). </span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#1912 was a weird election year with former president teddy roosevelt running as a progressive, placing second. Since 1914, Democrat and Republicans have been two biggest parties.</span></span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#recount, now should have 27 entries. Lots of missing data. </span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="do">##NOTE: there are some years where the majority of the state voted third party, this will make intensity of vote for Republican/Democrat appear less intense. </span></span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>count2<span class="ot">&lt;-</span> dataafter1916 <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#how many 27s do you have </span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>count2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's filter data to include election cycles 1916-2020 </span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>dataafter1916<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">filter</span>(election_year <span class="sc">&gt;=</span> <span class="dv">1916</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#recount, now we should have 27 entries for each year. Lots of missing data. </span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>count2<span class="ot">&lt;-</span> dataafter1916 <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#how many 27s do we have </span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>count2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#now move onto the next dataset: should be 39 of each entry for each election 1868-2020</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>count2<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#how many 39s do i have </span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>count2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>county_summary<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(election_year) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">num_counties=</span><span class="fu">n_distinct</span>(fips))</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co">#1912 was the first year that there were all 48 states (excluding hawaii and alaska)</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#1912 was weird election year with former president teddy roosevelt running as a progressive, placing second. Start from 1914 where democrat and republican have been biggest two parties since. </span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="do">##NOTE: there are some years where the majority of the state voted third party, this will make the difference between republican and democrat appear white. </span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>dataafter1916<span class="ot">&lt;-</span> pres_elections_release <span class="sc">%&gt;%</span> <span class="fu">filter</span>(election_year <span class="sc">&gt;=</span> <span class="dv">1916</span>)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="co">#recount, now should have 27 entries. Lots of missing data. </span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>count2<span class="ot">&lt;-</span> dataafter1916 <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co">#how many 27s do you have </span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>count2 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+</section>
+<section id="even-starting-from-1916-we-do-not-have-27-entries-for-each-election-year.-this-is-because-many-counties-in-2020-did-not-historically-exist.-however-we-still-want-to-include-this-data.-the-next-step-is-to-make-a-full-data-set-with-every-county-27-times-even-if-it-does-not-include-data." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="even-starting-from-1916-we-do-not-have-27-entries-for-each-election-year.-this-is-because-many-counties-in-2020-did-not-historically-exist.-however-we-still-want-to-include-this-data.-the-next-step-is-to-make-a-full-data-set-with-every-county-27-times-even-if-it-does-not-include-data.">Even starting from 1916, we do not have 27 entries for each election year. This is because many counties in 2020 did not historically exist. However, we still want to include this data. The next step is to make a full data set with every county 27 times, even if it does not include data.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -304,17 +348,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#compares complete data with original data, returns rows that are not in original data</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>missing_data<span class="ot">&lt;-</span> complete_data <span class="sc">%&gt;%</span> <span class="fu">anti_join</span>(dataafter1916, <span class="at">by=</span><span class="fu">c</span>(<span class="st">"fips"</span>, <span class="st">"election_year"</span>))</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#bind the missing rows with the original dataset</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>newelectiondata<span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(dataafter1916, missing_data)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#combines the missing rows with the original dataset</span></span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#check counts again, should have 27 of each</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>count3<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>count3 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#bind the missing rows with the original dataset</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>newelectiondata<span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(dataafter1916, missing_data)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#check counts again, should have 27 of each</span></span>
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#now we are good! there are 3125 entries which isn't that much more than our other dataset. Let's see which ones don't overlap. </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>count3<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">count</span>(fips)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>count3 <span class="sc">%&gt;%</span> <span class="fu">count</span>(n) <span class="sc">%&gt;%</span> <span class="fu">view</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="now-every-county-has-27-entries--we-are-good-there-are-3125-not-including-na-counties-which-isnt-that-much-more-than-our-other-data-set-3109.-lets-see-which-ones-dont-overlap." class="level4" style="color:teal;'">
+<h4 style="color:teal;'" class="anchored" data-anchor-id="now-every-county-has-27-entries--we-are-good-there-are-3125-not-including-na-counties-which-isnt-that-much-more-than-our-other-data-set-3109.-lets-see-which-ones-dont-overlap.">Now every county has 27 entries- we are good! There are 3125 (not including NA) counties which isn’t that much more than our other data set (3109). Let’s see which ones don’t overlap.</h4>
+<section id="first-we-need-to-make-a-column-to-compare-the-counties-in-the-data-sets-on.-geo_id-in-our-map-data-is-just-00500000us-the-fips-code-that-exists-in-our-election-data-set.-using-that-we-can-easily-make-a-matching-geo_id-in-our-election-data." class="level5" style="color:cornflowerblue;">
+<h5 style="color:cornflowerblue;" class="anchored" data-anchor-id="first-we-need-to-make-a-column-to-compare-the-counties-in-the-data-sets-on.-geo_id-in-our-map-data-is-just-00500000us-the-fips-code-that-exists-in-our-election-data-set.-using-that-we-can-easily-make-a-matching-geo_id-in-our-election-data.">First, we need to make a column to compare the counties in the data sets on. “GEO_ID” in our map data is just “00500000US” + the fips code that exists in our election data set. Using that, we can easily make a matching GEO_ID in our election data.</h5>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -322,6 +372,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>newelectiondata<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span>  <span class="fu">mutate</span>(<span class="at">GEO_ID=</span> <span class="fu">paste0</span>(<span class="st">"0500000US"</span>, fips))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+</section>
+<section id="now-we-will-check-if-every-geo_id-in-our-election-data-is-in-our-map-data-and-vice-versa-identifying-the-ones-which-arent." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="now-we-will-check-if-every-geo_id-in-our-election-data-is-in-our-map-data-and-vice-versa-identifying-the-ones-which-arent.">Now we will check if every GEO_ID in our election data is in our map data and vice versa, identifying the ones which aren’t.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -331,21 +385,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#name every unique ID which is not in us_data2, 17 values</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>missingnewelectiondata<span class="ot">&lt;-</span> (newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#make a dataset to show years</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>missing_geo_ids<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(GEO_ID <span class="sc">%in%</span> missingnewelectiondata)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#this is dade, florida (changed to miami dade after 1996 election); campbell, georgia (ceased to exist after 1928 election); Milton, GA (merged with Fulton after 1932); Ormsby, NV (county until 1969); armstrong, SD (county until 1952); ogala lakota, sd (renamed county after 2014); washabaugh, sd (merged after 1976 election); washington sd (until 1943); elizabeth city, va (merged in 1952); nansemond, va (extinct after 1972); norfolk, va (changed to chesapeake in 1963); princess anne, va (merged in 1963); warwick, va (merged 1952); clifton forge, va (merged w allegheny in 2001); south boston city, va (merged in 1996); south norfolk city, va (beccame chesapeake with norfolk in 1963)</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#make a dataset to show election data not in map data </span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>missing_geo_ids<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(GEO_ID <span class="sc">%in%</span> missingnewelectiondata)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#do some research into the counties:</span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">#check other way around </span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#check which values aren't in election data</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>missingusdata2<span class="ot">&lt;-</span> (us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#none! </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#make a dataset to show years</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>missing_geo_ids<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(GEO_ID <span class="sc">%in%</span> missingnewelectiondata)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#this is dade, florida (changed to miami dade after 1996 election); campbell, georgia (ceased to exist after 1928 election); Milton, GA (merged with Fulton after 1932); Ormsby, NV (county until 1969); armstrong, SD (county until 1952); ogala lakota, sd (renamed county after 2014); washabaugh, sd (merged after 1976 election); washington sd (until 1943); elizabeth city, va (merged in 1952); nansemond, va (extinct after 1972); norfolk, va (changed to chesapeake in 1963); princess anne, va (merged in 1963); warwick, va (merged 1952); clifton forge, va (merged w allegheny in 2001); south boston city, va (merged in 1996); south norfolk city, va (beccame chesapeake with norfolk in 1963)</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">#check other way around </span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">#check which values aren't in election data</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>missingusdata2<span class="ot">&lt;-</span> (us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co">#none!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="our-check-has-shown-that-every-map-geo_id-is-in-election-data-but-17-election-data-geo_ids-are-not-in-the-map-data.-after-some-research-i-have-found-that-some-counties-have-simply-changed-their-names-and-either-the-new-name-or-old-name-is-in-the-map-data-set.-dade-miami-dade-shannon-ogala-lakota-ormsby-carson-city.-we-will-change-these-namesids-in-the-election-data-to-reflect-which-nameid-is-in-the-map-data." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="our-check-has-shown-that-every-map-geo_id-is-in-election-data-but-17-election-data-geo_ids-are-not-in-the-map-data.-after-some-research-i-have-found-that-some-counties-have-simply-changed-their-names-and-either-the-new-name-or-old-name-is-in-the-map-data-set.-dade-miami-dade-shannon-ogala-lakota-ormsby-carson-city.-we-will-change-these-namesids-in-the-election-data-to-reflect-which-nameid-is-in-the-map-data.">Our check has shown that every map GEO_ID is in election data, but 17 election data GEO_ID’s are not in the map data. After some research, I have found that some counties have simply changed their names and either the new name or old name is in the map data set. (dade-&gt;miami dade, shannon-&gt;ogala lakota, ormsby-&gt;carson city). We will change these names/ID’s in the election data to reflect which name/ID is in the map data.</h4>
+<section id="second-some-counties-campbell-ga-washington-sd-have-ceased-to-exist-or-merged-into-several-counties-making-it-hard-to-include-in-the-data.-we-will-simply-drop-these-counties." class="level5" style="color:cornflowerblue;">
+<h5 style="color:cornflowerblue;" class="anchored" data-anchor-id="second-some-counties-campbell-ga-washington-sd-have-ceased-to-exist-or-merged-into-several-counties-making-it-hard-to-include-in-the-data.-we-will-simply-drop-these-counties.">Second, some counties (Campbell GA, Washington SD) have ceased to exist or merged into several counties, making it hard to include in the data. We will simply drop these counties.</h5>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -356,6 +423,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>newelectiondata<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>GEO_ID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"0500000US13041"</span>, <span class="st">"0500000US46133"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+</section>
+<section id="for-the-rest-of-the-counties-they-have-merged-together-in-later-years.-for-these-we-will-take-the-years-that-both-of-the-counties-exist-and-add-the-vote-totals-together-changing-the-name-and-id-to-the-merged-county.-we-will-start-with-milton-and-fulton-which-is-now-just-fulton-ga." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="for-the-rest-of-the-counties-they-have-merged-together-in-later-years.-for-these-we-will-take-the-years-that-both-of-the-counties-exist-and-add-the-vote-totals-together-changing-the-name-and-id-to-the-merged-county.-we-will-start-with-milton-and-fulton-which-is-now-just-fulton-ga.">For the rest of the counties, they have merged together in later years. For these, we will take the years that both of the counties exist and add the vote totals together, changing the name and ID to the merged county. We will start with Milton and Fulton, which is now just Fulton, GA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -372,6 +443,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(milton, miltonfultonout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-the-process-for-armstrong-and-dewey-now-just-dewey-sd." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-the-process-for-armstrong-and-dewey-now-just-dewey-sd.">Repeat the process for Armstrong and Dewey, now just Dewey, SD.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -390,6 +464,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(armstrong, deweyfilterout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-the-process-for-south-norfolk-city-and-norfolk-which-are-now-together-chesapeake-va." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-the-process-for-south-norfolk-city-and-norfolk-which-are-now-together-chesapeake-va.">Repeat the process for South Norfolk City and Norfolk, which are now together Chesapeake, VA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -407,6 +484,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(norfolk, norfolkfilterout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-the-process-for-south-boston-city-and-halifax-now-just-halifax-va." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-the-process-for-south-boston-city-and-halifax-now-just-halifax-va.">Repeat the process for South Boston City and Halifax, now just Halifax, VA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -424,6 +504,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(southbostoncity, sbcfilterout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-process-for-clifton-forge-and-alleghany-now-just-alleghany-va." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-process-for-clifton-forge-and-alleghany-now-just-alleghany-va.">Repeat process for Clifton Forge and Alleghany, now just Alleghany, VA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -441,6 +524,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(cliftonforge, clifforgeout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-the-process-for-warwick-and-newport-news-now-just-newport-news-va." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-the-process-for-warwick-and-newport-news-now-just-newport-news-va.">Repeat the process for Warwick and Newport News, now just Newport News, VA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -459,6 +545,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(warwick, warwickout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-the-process-for-nansemond-and-suffolk-now-just-suffolk-va." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-the-process-for-nansemond-and-suffolk-now-just-suffolk-va.">Repeat the process for Nansemond and Suffolk, now just Suffolk, VA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -478,6 +567,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(nansemond, nansout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-the-process-for-elizabeth-city-and-hampton-now-just-hampton-va." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-the-process-for-elizabeth-city-and-hampton-now-just-hampton-va.">Repeat the process for Elizabeth City and Hampton, now just Hampton, VA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -496,6 +588,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(elizabethcity, elizabethcityout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-process-for-washabaugh-and-jackson-county-now-just-jackson-sd." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-process-for-washabaugh-and-jackson-county-now-just-jackson-sd.">Repeat process for Washabaugh and Jackson County, now just Jackson, SD.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -505,7 +600,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(county_name, election_year, GEO_ID) <span class="sc">%&gt;%</span> </span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">c</span>(democratic_raw_votes, republican_raw_votes, pres_raw_county_vote_totals_two_party), sum, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">.groups=</span> <span class="st">'drop'</span>)</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">#filter out dewey and armstrong in relevant years </span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">#filter out in relevant years </span></span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>washabaughfilterout <span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span></span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(GEO_ID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"0500000US46131"</span>, <span class="st">"0500000US46071"</span>) <span class="sc">&amp;</span> election_year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1924</span>, <span class="dv">1928</span>, <span class="dv">1932</span>, <span class="dv">1936</span>, <span class="dv">1940</span>, <span class="dv">1944</span>, <span class="dv">1948</span>, <span class="dv">1952</span>, <span class="dv">1956</span>, <span class="dv">1960</span>, <span class="dv">1964</span>, <span class="dv">1968</span>, <span class="dv">1972</span>, <span class="dv">1976</span>)))</span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
@@ -513,6 +608,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(washabaugh, washabaughfilterout)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="repeat-process-for-princess-anne-and-virginia-beach-now-just-virginia-beach-va." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="repeat-process-for-princess-anne-and-virginia-beach-now-just-virginia-beach-va.">Repeat process for Princess Anne and Virginia Beach, now just Virginia Beach, VA.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -535,22 +633,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>newelectiondata <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(princessanne, princessanneout, namechange)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="recheck-again-with-changes-that-every-election-geo_id-is-in-map-set-and-vice-versa." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="recheck-again-with-changes-that-every-election-geo_id-is-in-map-set-and-vice-versa.">Recheck again with changes that every election GEO_ID is in map set and vice versa.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#recheck</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>(newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#seems to double include princess anne, unrecognized GEOID. </span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>newelectiondata<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(GEO_ID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"0500000US51151"</span>, <span class="st">"0500000USNA"</span>)))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#seems to double include princess anne, unrecognized GEOID. Drop this from our data</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#recheck again- good now. </span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>(newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>newelectiondata<span class="ot">&lt;-</span> newelectiondata <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(GEO_ID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"0500000US51151"</span>, <span class="st">"0500000USNA"</span>)))</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#recheck again- good now. </span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>(newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)[<span class="sc">!</span>(us_data2<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique) <span class="sc">%in%</span> (newelectiondata<span class="sc">$</span>GEO_ID <span class="sc">%&gt;%</span> unique)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="now-that-everything-matches-lets-make-new-variables-in-our-election-data-set-representing-the-percentage-of-democrat-and-republican-vote-the-dominant-party-party-who-won-each-county-and-by-how-much-they-won-the-percent-over-50." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="now-that-everything-matches-lets-make-new-variables-in-our-election-data-set-representing-the-percentage-of-democrat-and-republican-vote-the-dominant-party-party-who-won-each-county-and-by-how-much-they-won-the-percent-over-50.">Now that everything matches, let’s make new variables in our election data set representing the percentage of Democrat and Republican vote, the dominant party (party who won each county), and by how much they won (the percent over 50%).</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -559,6 +665,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">republican_raw_votes_2perc=</span> republican_raw_votes<span class="sc">/</span>pres_raw_county_vote_totals_two_party) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">democratic_raw_votes_2perc=</span> <span class="dv">1</span><span class="sc">-</span>republican_raw_votes_2perc) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">republican_excess=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, republican_raw_votes_2perc<span class="fl">-0.5</span>, <span class="dv">0</span>), <span class="at">democrat_excess=</span> <span class="fu">ifelse</span>(democratic_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, democratic_raw_votes_2perc<span class="fl">-0.5</span>, <span class="dv">0</span>), <span class="at">dominantparty=</span> <span class="fu">ifelse</span>(republican_raw_votes_2perc <span class="sc">&gt;</span> democratic_raw_votes_2perc, <span class="st">"Republican"</span>, <span class="st">"Democrat"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="now-we-can-finally-merge-our-map-and-election-data-on-geo_id." class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="now-we-can-finally-merge-our-map-and-election-data-on-geo_id.">Now we can finally merge our map and election data on GEO_ID.</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -567,6 +676,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>mergedelectiondata<span class="ot">&lt;-</span> <span class="fu">full_join</span>(newelectiondata, us_data2, <span class="at">by=</span><span class="st">"GEO_ID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="lets-filter-our-data-to-just-2016-1916-to-try-two-different-individual-election-plots" class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="lets-filter-our-data-to-just-2016-1916-to-try-two-different-individual-election-plots">Let’s filter our data to just 2016 &amp; 1916 to try two different individual election plots</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -582,13 +694,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 </section>
-<section id="election-plot" class="level2">
-<h2 class="anchored" data-anchor-id="election-plot">2016 election plot:</h2>
+</section>
+<section id="election-plot-first-simply-who-won-each-county." class="level2">
+<h2 class="anchored" data-anchor-id="election-plot-first-simply-who-won-each-county.">2016 election plot: first, simply who won each county.</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plot for year 2016 dominant party in each county and by how much </span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(year2016) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, republican_excess, <span class="sc">-</span>democrat_excess)))<span class="sc">+</span> <span class="fu">scale_fill_gradient2</span>(<span class="at">low=</span><span class="st">"blue"</span>, <span class="at">mid=</span><span class="st">"white"</span>, <span class="at">high=</span><span class="st">"red"</span>, <span class="at">midpoint=</span><span class="dv">0</span>, <span class="at">na.value =</span> <span class="st">"gray20"</span>, <span class="at">name=</span><span class="st">"Vote over 50% "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(year2016) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, <span class="st">"Republican"</span>, <span class="st">"Democrat"</span>))) <span class="sc">+</span> <span class="fu">scale_fill_manual</span>(<span class="at">values=</span> <span class="fu">c</span>(<span class="st">"Republican"</span><span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"Democrat"</span><span class="ot">=</span><span class="st">"blue"</span>), <span class="at">name=</span> <span class="st">"Winning Party"</span>) <span class="sc">+</span> ggthemes<span class="sc">::</span><span class="fu">theme_map</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -598,14 +710,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-</section>
-<section id="try-a-different-year" class="level2">
-<h2 class="anchored" data-anchor-id="try-a-different-year">Try a different year:</h2>
+<section id="this-is-a-bit-misleading-so-lets-plot-by-how-much-they-won" class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="this-is-a-bit-misleading-so-lets-plot-by-how-much-they-won">This is a bit misleading so let’s plot by how much they won:</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plot for year 2016 dominant party in each county and by how much </span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(year1916) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, republican_excess, <span class="sc">-</span>democrat_excess)), <span class="at">size=</span><span class="fl">0.01</span>)<span class="sc">+</span> <span class="fu">scale_fill_gradient2</span>(<span class="at">low=</span><span class="st">"blue"</span>, <span class="at">mid=</span><span class="st">"white"</span>, <span class="at">high=</span><span class="st">"red"</span>, <span class="at">midpoint=</span><span class="dv">0</span>, <span class="at">na.value =</span> <span class="st">"gray20"</span>, <span class="at">name=</span><span class="st">"Vote over 50% "</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(year2016) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, republican_raw_votes_2perc, <span class="sc">-</span>democratic_raw_votes_2perc))) <span class="sc">+</span> <span class="fu">scale_fill_gradient2</span>(<span class="at">low=</span><span class="st">"blue"</span>, <span class="at">high=</span><span class="st">"red"</span>, <span class="at">limits=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>), <span class="at">labels=</span> scales<span class="sc">::</span>percent, <span class="at">name=</span><span class="st">"Winning Party Vote %"</span>) <span class="sc">+</span> ggthemes<span class="sc">::</span><span class="fu">theme_map</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -615,82 +726,124 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+</section>
+<section id="try-a-different-year-1916" class="level2">
+<h2 class="anchored" data-anchor-id="try-a-different-year-1916">Try a different year, 1916:</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#arrange so that ggplot title works correctly </span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>mergedelectiondata<span class="ot">&lt;-</span> mergedelectiondata <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(election_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plot for year 1916 who won</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(year1916) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, <span class="st">"Republican"</span>, <span class="st">"Democrat"</span>))) <span class="sc">+</span> <span class="fu">scale_fill_manual</span>(<span class="at">values=</span> <span class="fu">c</span>(<span class="st">"Republican"</span><span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"Democrat"</span><span class="ot">=</span><span class="st">"blue"</span>), <span class="at">name=</span> <span class="st">"Winning Party"</span>) <span class="sc">+</span> ggthemes<span class="sc">::</span><span class="fu">theme_map</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="projects-2_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="and-again-by-how-much-in-1916" class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="and-again-by-how-much-in-1916">And again by how much in 1916:</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(year1916) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, republican_raw_votes_2perc, <span class="sc">-</span>democratic_raw_votes_2perc))) <span class="sc">+</span> <span class="fu">scale_fill_gradient2</span>(<span class="at">low=</span><span class="st">"blue"</span>, <span class="at">high=</span><span class="st">"red"</span>, <span class="at">limits=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>), <span class="at">labels=</span> scales<span class="sc">::</span>percent, <span class="at">name=</span><span class="st">"Winning Party Vote %"</span>) <span class="sc">+</span> ggthemes<span class="sc">::</span><span class="fu">theme_map</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="projects-2_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="arrange-our-data-by-year-so-that-it-is-in-chronological-order" class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="arrange-our-data-by-year-so-that-it-is-in-chronological-order">Arrange our data by year so that it is in chronological order:</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#arrange so that ggplot title works correctly </span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>mergedelectiondata<span class="ot">&lt;-</span> mergedelectiondata <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(election_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+</section>
+<section id="make-a-map-for-every-single-year-more-efficiently-in-a-for-loop-and-save-it" class="level4" style="color:teal;">
+<h4 style="color:teal;" class="anchored" data-anchor-id="make-a-map-for-every-single-year-more-efficiently-in-a-for-loop-and-save-it">Make a map for every single year (more efficiently in a for loop) and save it!:</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">27</span>) {</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>current_year<span class="ot">&lt;-</span> <span class="fu">unique</span>(mergedelectiondata<span class="sc">$</span>election_year)[i]</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>g<span class="ot">&lt;-</span><span class="fu">ggplot</span>(mergedelectiondata) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, republican_excess, <span class="sc">-</span>democrat_excess)), <span class="at">size=</span><span class="fl">0.01</span>)<span class="sc">+</span> <span class="fu">scale_fill_gradient2</span>(<span class="at">low=</span><span class="st">"blue"</span>, <span class="at">mid=</span><span class="st">"white"</span>, <span class="at">high=</span><span class="st">"red"</span>, <span class="at">midpoint=</span><span class="dv">0</span>, <span class="at">na.value =</span> <span class="st">"gray20"</span>, <span class="at">name=</span><span class="st">"Vote over 50% "</span>) <span class="sc">+</span> ggforce<span class="sc">::</span><span class="fu">facet_wrap_paginate</span>(<span class="sc">~</span>election_year, <span class="at">ncol=</span><span class="dv">1</span>, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">page=</span>i) <span class="sc">+</span> <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">140</span>, <span class="sc">-</span><span class="dv">60</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title=</span><span class="fu">paste</span>(<span class="st">"Election Year:"</span>, current_year)) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">"bold"</span>), <span class="at">legend.position =</span> <span class="st">"right"</span>, <span class="at">panel.background =</span> <span class="fu">element_blank</span>(), <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),<span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),     <span class="at">axis.title =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co">#ggsave(paste0("electionmap", i, ".pdf"), plot=g, width=10, height=8)</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#library(highcharter)</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#ds&lt;- mergedelectiondata %&gt;%</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#mutate(value = ifelse(republican_raw_votes_2perc&gt;0.5, republican_excess, -democrat_excess)) %&gt;% mutate(value=ifelse(is.na(value), NA, value)) %&gt;% select(election_year, value, GEO_ID)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ds_prepared &lt;- ds %&gt;%</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#group_by(GEO_ID) %&gt;%</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#summarise(</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#data = list(</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>      <span class="co">#sequence = value,</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>      <span class="co">#year = election_year</span></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">#),</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#.groups = 'drop'</span></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#) %&gt;%</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#ungroup()</span></span>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">27</span>) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>current_year<span class="ot">&lt;-</span> <span class="fu">unique</span>(mergedelectiondata<span class="sc">$</span>election_year)[i]</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>g<span class="ot">&lt;-</span><span class="fu">ggplot</span>(mergedelectiondata) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">geometry=</span>geometry, <span class="at">fill=</span><span class="fu">ifelse</span>(republican_raw_votes_2perc<span class="sc">&gt;</span><span class="fl">0.5</span>, republican_raw_votes_2perc, <span class="sc">-</span>democratic_raw_votes_2perc)), <span class="at">size=</span><span class="fl">0.01</span>)<span class="sc">+</span> <span class="fu">scale_fill_gradient2</span>(<span class="at">low=</span><span class="st">"blue"</span>, <span class="at">high=</span><span class="st">"red"</span>,<span class="at">limits=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>), <span class="at">midpoint=</span><span class="dv">0</span>, <span class="at">na.value =</span> <span class="st">"gray20"</span>, <span class="at">labels=</span> scales<span class="sc">::</span>percent, <span class="at">name=</span><span class="st">"Winning Party Vote %"</span>) <span class="sc">+</span> ggforce<span class="sc">::</span><span class="fu">facet_wrap_paginate</span>(<span class="sc">~</span>election_year, <span class="at">ncol=</span><span class="dv">1</span>, <span class="at">nrow=</span><span class="dv">1</span>, <span class="at">page=</span>i) <span class="sc">+</span> <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">140</span>, <span class="sc">-</span><span class="dv">60</span>)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title=</span><span class="fu">paste</span>(<span class="st">"Election Year:"</span>, current_year)) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">face =</span> <span class="st">"bold"</span>), <span class="at">legend.position =</span> <span class="st">"right"</span>, <span class="at">panel.background =</span> <span class="fu">element_blank</span>(), <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),<span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),     <span class="at">axis.title =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co">#ggsave(paste0("electionmap", i, ".pdf"), plot=g, width=10, height=8)</span></span>
 <span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="co">#hc &lt;- highchart(type = "map") %&gt;% </span></span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_add_series(</span></span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">#data = ds_prepared,</span></span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#name = "% vote over 50 for dominant party",</span></span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">#mapData = mergedelectiondata,</span></span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#borderWidth = 0.01</span></span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">#) %&gt;% </span></span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_colorAxis(minColor= "blue", maxColor="red") %&gt;%  </span></span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_title(text = "Presidential Elections by county since 1912") %&gt;% </span></span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_subtitle(text = "% over 50 for dominant party in county") %&gt;% </span></span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_legend(</span></span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">#layout = "horizontal",</span></span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">#reversed = TRUE,</span></span>
-<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">#floating = TRUE,</span></span>
-<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">#align = "right"</span></span>
-<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">#) %&gt;% </span></span>
-<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_motion(</span></span>
-<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">#enabled = TRUE,</span></span>
-<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">#axisLabel = "year",</span></span>
-<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">#labels = sort(unique(ds$election_year)),</span></span>
-<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">#series = 0,</span></span>
-<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>    <span class="co">#updateIterval = 50,</span></span>
-<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>    <span class="co">#magnet = list(</span></span>
-<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>      <span class="co">#round = "floor",</span></span>
-<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>      <span class="co">#step = 0.1</span></span>
-<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">#)</span></span>
-<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">#) %&gt;% </span></span>
-<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_chart(marginBottom  = 100)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#library(highcharter)</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#ds&lt;- mergedelectiondata %&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#mutate(value = ifelse(republican_raw_votes_2perc&gt;0.5, republican_excess, -democrat_excess)) %&gt;% mutate(value=ifelse(is.na(value), NA, value)) %&gt;% select(election_year, value, GEO_ID)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ds_prepared &lt;- ds %&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#group_by(GEO_ID) %&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#summarise(</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#data = list(</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>      <span class="co">#sequence = value,</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>      <span class="co">#year = election_year</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">#),</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#.groups = 'drop'</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#) %&gt;%</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#ungroup()</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co">#hc &lt;- highchart(type = "map") %&gt;% </span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_add_series(</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">#data = ds_prepared,</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">#name = "% vote over 50 for dominant party",</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">#mapData = mergedelectiondata,</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#borderWidth = 0.01</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">#) %&gt;% </span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_colorAxis(minColor= "blue", maxColor="red") %&gt;%  </span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_title(text = "Presidential Elections by county since 1912") %&gt;% </span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_subtitle(text = "% over 50 for dominant party in county") %&gt;% </span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_legend(</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">#layout = "horizontal",</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">#reversed = TRUE,</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">#floating = TRUE,</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">#align = "right"</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">#) %&gt;% </span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_motion(</span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">#enabled = TRUE,</span></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">#axisLabel = "year",</span></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">#labels = sort(unique(ds$election_year)),</span></span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">#series = 0,</span></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>    <span class="co">#updateIterval = 50,</span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>    <span class="co">#magnet = list(</span></span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>      <span class="co">#round = "floor",</span></span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>      <span class="co">#step = 0.1</span></span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">#)</span></span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">#) %&gt;% </span></span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>  <span class="co">#hc_chart(marginBottom  = 100)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -786,7 +939,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/laurlaur3917\.quarto\.pub\/laurenswebsite");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
