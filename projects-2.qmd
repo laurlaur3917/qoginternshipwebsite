@@ -19,6 +19,7 @@ library(ggplot2)
 library(leaflet)
 library(tidyverse)
 library(ggthemes)
+library(ggnewscale)
 
 load("data/dataverse_shareable_presidential_county_returns_1868_2020.Rdata")
 us_data2<- st_read("data/gz_2010_us_050_00_5m.json", quiet=TRUE)
@@ -420,6 +421,8 @@ newelectiondata<- newelectiondata %>%
   mutate(republican_raw_votes_2perc= republican_raw_votes/pres_raw_county_vote_totals_two_party) %>% mutate(democratic_raw_votes_2perc= 1-republican_raw_votes_2perc) %>% mutate(republican_excess=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc-0.5, 0), democrat_excess= ifelse(democratic_raw_votes_2perc>0.5, democratic_raw_votes_2perc-0.5, 0), dominantparty= ifelse(republican_raw_votes_2perc > democratic_raw_votes_2perc, "Republican", "Democrat"))
 
 
+
+
 ```
 
 #### Now we can finally merge our map and election data on GEO_ID. {style="color:teal;"}
@@ -430,16 +433,22 @@ newelectiondata<- newelectiondata %>%
 mergedelectiondata<- full_join(newelectiondata, us_data2, by="GEO_ID")
 ```
 
+##### Let's also create color scales for percentage of Republican and Democrat vote:  {style="color:cornflowerblue;"}
+
+```{r}
+mapcolors <- mergedelectiondata %>% mutate(republicancolor = case_when(republican_excess>0.4 & republican_excess<=0.5 ~ "#a70000", republican_excess > 0.3 & republican_excess <= 0.4 ~ "#ff0000", republican_excess > 0.2 & republican_excess <= 0.3 ~ "#ff5252", republican_excess > 0.1 & republican_excess <= 0.2 ~ 	"#ff7b7b", republican_excess >= 0 & republican_excess<=0.1 ~ "#ffbaba", TRUE ~ NA_character_)) %>% mutate(democratcolor= case_when(democrat_excess>0.4 & democrat_excess<=0.5 ~ "#0200b9",democrat_excess > 0.3 & democrat_excess<= 0.4 ~ "#1000ff",democrat_excess > 0.2 & democrat_excess <= 0.3 ~ "#3399ff", democrat_excess > 0.1 & democrat_excess <= 0.2 ~ "#3a80ec", democrat_excess >= 0 & democrat_excess<= 0.1 ~ "#cce0ff", TRUE ~ NA_character_)) 
+```
+
 #### Let's filter our data to just 2016 & 1916 to try two different individual election plots {style="color:teal;"}
 
 ```{r}
 #filter to 2016 
-year2016<- mergedelectiondata %>% 
+year2016<- mapcolors %>% 
   filter(election_year==2016)
 ```
 
 ```{r}
-year1916<- mergedelectiondata %>%  filter(election_year==1916)
+year1916<- mapcolors %>% filter(election_year==1916)
 ```
 
 ## 2016 election plot: first, simply who won each county.
@@ -452,7 +461,7 @@ ggplot(year2016) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_vot
 
 ```{r}
 #plot for year 2016 dominant party in each county and by how much 
-ggplot(year2016) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc, -democratic_raw_votes_2perc))) + scale_fill_gradient2(low="blue", high="red", limits=c(-1,1), labels= scales::percent, name="Winning Party Vote %") + ggthemes::theme_map() + theme(legend.position = "right")
+ggplot() + geom_sf(data= year2016 %>% filter(dominantparty=="Republican"), aes(geometry=geometry, fill=republicancolor)) + scale_fill_identity(name = "Republican Vote %", labels = c("90%-100%", "80%-90%", "70%-80%", "60%-70%", "50%-60%"), guide="legend") + new_scale_fill() + geom_sf(data= year2016 %>% filter(dominantparty=="Democrat"), aes(geometry=geometry, fill=democratcolor)) + scale_fill_identity(name= "Democrat Vote %", labels=c("90%-100%", "80%-90%", "70%-80%", "60%-70%", "50%-60%"), guide="legend") + ggthemes::theme_map() + theme(legend.position = "right")
 
 ```
 
@@ -466,7 +475,8 @@ ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_vot
 #### And again by how much in 1916: {style="color:teal;"}
 
 ```{r}
-ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc, -democratic_raw_votes_2perc))) + scale_fill_gradient2(low="blue", high="red", limits=c(-1,1), labels= scales::percent, name="Winning Party Vote %") + ggthemes::theme_map() + theme(legend.position = "right")
+ggplot() + geom_sf(data= year1916 %>% filter(dominantparty=="Republican"), aes(geometry=geometry, fill=republicancolor)) + scale_fill_identity(name = "Republican Vote %", labels = c("90%-100%", "80%-90%", "70%-80%", "60%-70%", "50%-60%", "NA"), guide="legend") + new_scale_fill() +  geom_sf(data= year1916 %>% filter(dominantparty=="Democrat"), aes(geometry=geometry, fill=democratcolor)) + scale_fill_identity(name = "Democrat Vote %", labels = c("90%-100%", "80%-90%", "70%-80%", "60%-70%", "50%-60%", "NA"), guide="legend") + ggthemes::theme_map() + theme(legend.position = "right")
+
 
 ```
 
@@ -474,7 +484,7 @@ ggplot(year1916) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_vot
 
 ```{r}
 #arrange so that ggplot title works correctly 
-mergedelectiondata<- mergedelectiondata %>% arrange(election_year)
+mapcolors<- mapcolors %>% arrange(election_year)
 ```
 
 #### Make a map for every single year (more efficiently in a for loop) and save it!: {style="color:teal;"}
@@ -483,10 +493,10 @@ mergedelectiondata<- mergedelectiondata %>% arrange(election_year)
 for (i in 1:27) {
   
 
-current_year<- unique(mergedelectiondata$election_year)[i]
+current_year<- unique(mapcolors$election_year)[i]
 
 
-g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc, -democratic_raw_votes_2perc)), size=0.01)+ scale_fill_gradient2(low="blue", high="red",limits=c(-1,1), midpoint=0, na.value = "gray20", labels= scales::percent, name="Winning Party Vote %") + ggforce::facet_wrap_paginate(~election_year, ncol=1, nrow=1, page=i) + coord_sf(xlim = c(-140, -60)) + labs(title=paste("Election Year:", current_year)) + theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "right", panel.background = element_blank(), axis.text = element_blank(),axis.ticks = element_blank(),     axis.title = element_blank(), panel.grid = element_blank())
+g<-ggplot() + geom_sf(data= mapcolors %>% filter(dominantparty=="Republican"), aes(geometry=geometry, fill=republicancolor)) + scale_fill_identity(name = "Republican Vote %", labels = c("90%-100%", "80%-90%", "70%-80%", "60%-70%", "50%-60%"), guide="legend") + new_scale_fill() +  geom_sf(data= mapcolors %>% filter(dominantparty=="Democrat"), aes(geometry=geometry, fill=democratcolor)) + scale_fill_identity(name = "Democrat Vote %", labels = c("90%-100%", "80%-90%", "70%-80%", "60%-70%", "50%-60%"), guide="legend") + ggforce::facet_wrap_paginate(~election_year, ncol=1, nrow=1, page=i) + coord_sf(xlim = c(-140, -60)) + labs(title=paste("Election Year:", current_year)) + theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "right", panel.background = element_blank(), axis.text = element_blank(),axis.ticks = element_blank(), axis.title = element_blank(), panel.grid = element_blank())
 
 
 #ggsave(paste0("electionmap", i, ".pdf"), plot=g, width=10, height=8)
@@ -498,34 +508,32 @@ g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(repub
 
 ```{r}
 #library(highcharter)
-#ds<- mergedelectiondata %>%
-  #mutate(value = ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)) %>% mutate(value=ifelse(is.na(value), NA, value)) %>% select(election_year, value, GEO_ID)
+#dataanimated<- mergedelectiondata %>%
+  #mutate(value = ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc, -democratic_raw_votes_2perc)) %>% mutate(value=ifelse(is.na(value), NA, value)) %>% select(election_year, value, GEO_ID)
   
  
 ```
 
 ```{r}
-#ds_prepared <- ds %>%
-  #group_by(GEO_ID) %>%
-  #summarise(
-    #data = list(
-      #sequence = value,
-      #year = election_year
-    #),
-    #.groups = 'drop'
-  #) %>%
-  #ungroup()
+#ds <- dataanimated %>% 
+  #group_by(GEO_ID) %>% 
+  #do(item = list(
+    #GEO_ID = first(.$GEO_ID),
+    #sequence = .$value,
+    #value = first(.$value))) %>% 
+  #.$item
 
 #hc <- highchart(type = "map") %>% 
   #hc_add_series(
-    #data = ds_prepared,
-    #name = "% vote over 50 for dominant party",
-    #mapData = mergedelectiondata,
+    #data = ds,
+    #name = "US election results from 1916-2020",
+    #mapData = us_data2,
+    #joinBy= "GEO_ID",
     #borderWidth = 0.01
     #) %>% 
-  #hc_colorAxis(minColor= "blue", maxColor="red") %>%  
-  #hc_title(text = "Presidential Elections by county since 1912") %>% 
-  #hc_subtitle(text = "% over 50 for dominant party in county") %>% 
+  #hc_colorAxis(stops = color_stops()) %>%  
+  #hc_title(text = "US election results from 1916-2020") %>% 
+  #hc_subtitle(text = "% vote of winning party") %>% 
   #hc_legend(
     #layout = "horizontal",
     #reversed = TRUE,
@@ -535,7 +543,7 @@ g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(repub
   #hc_motion(
     #enabled = TRUE,
     #axisLabel = "year",
-    #labels = sort(unique(ds$election_year)),
+    #labels = sort(unique(dataanimated$election_year)),
     #series = 0,
     #updateIterval = 50,
     #magnet = list(
@@ -545,4 +553,5 @@ g<-ggplot(mergedelectiondata) + geom_sf(aes(geometry=geometry, fill=ifelse(repub
   #) %>% 
   #hc_chart(marginBottom  = 100)
 
+#hc
 ```
