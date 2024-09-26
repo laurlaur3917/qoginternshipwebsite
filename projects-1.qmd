@@ -56,7 +56,7 @@ leaflet(data=county_map) %>%
 
 ## Trying from another, more complicated source: <https://github.com/generalpiston/geojson-us-city-boundaries>
 
-#### Note: I'm commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. I mainly just wanted to learn how to read in more complicated file types. If you want to try at home feel free to download the data from the link above. 
+#### Note: I'm commenting this section out because they are very big files and it ended up not giving me what I wanted, I will try another source below. I mainly just wanted to learn how to read in more complicated file types. If you want to try at home feel free to download the data from the link above.
 
 First, starting with state data:
 
@@ -158,51 +158,4 @@ library(jsonlite)
 #write_json(us_data2, "usdata2_bzip2.json.bz2", compress = "bzip2") #4.2 MB 
 #write_json(us_data2, "usdata2_xz.json.xz", compress = "xz") #4.2 
 
-```
-
-### Now let's load some election data and plot it:
-
-```{r}
-load("~/Downloads/dataverse_shareable_presidential_county_returns_1868_2020.Rdata")
-```
-
-```{r}
-#replace non-printable characters with blank space
-us_data2$NAME <- str_replace_all(us_data2$NAME, "[^[:print:]]", "")
-```
-
-```{r}
-#mutate names to upper in the map data to match the election data 
-us_data2<- us_data2 %>% 
-  mutate(NAME= toupper(NAME)) 
-  
-us_data2<- us_data2 %>% 
-  rename(county_name=NAME)     
-
-#make new variables to give republican and democrat % of vote, as well as statements to take the republican/democrat vote if over 50% 
-pres_elections_release<- pres_elections_release %>% 
-  mutate(republican_raw_votes_2perc= republican_raw_votes/pres_raw_county_vote_totals_two_party) %>% mutate(democratic_raw_votes_2perc= 1-republican_raw_votes_2perc) %>% mutate(republican_excess=ifelse(republican_raw_votes_2perc>0.5, republican_raw_votes_2perc-0.5, 0), democrat_excess= ifelse(democratic_raw_votes_2perc>0.5, democratic_raw_votes_2perc-0.5, 0), dominantparty= ifelse(republican_raw_votes_2perc > democratic_raw_votes_2perc, "Republican", "Democrat"))
-  
-```
-
-```{r}
-#merge on county_name 
-merged<- merge(us_data2, pres_elections_release, by= "county_name", all=TRUE) 
-```
-
-```{r}
-#filter to 2016 
-year2016<- merged %>% 
-  filter(election_year==2016)
-
-```
-
-## 2016 election plot
-
-```{r}
-
-#plot for year 2016 dominant party in each county and by how much 
-ggplot(year2016) +
-  geom_sf(aes(fill=ifelse(republican_raw_votes_2perc>0.5, republican_excess, -democrat_excess)))+
-  scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, name="Vote over 50% ")
 ```
