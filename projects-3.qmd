@@ -1,0 +1,91 @@
+---
+title: "Project 3: Html list box displaying election plots"
+execute: 
+  warning: false
+  message: false
+format:
+  html:
+    page-layout: full
+    title-block-banner: true
+    code-fold: true 
+---
+
+```{=html}
+
+<html>
+  
+    <head>
+        <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <meta http-equiv="Expires" content="0"/>
+        <meta charset="UTF-8"/>
+
+        <title>Display election maps</title>
+
+        <script type="text/javascript">
+            function initialize() {         
+                // populate the years to select dynamically
+                // increment years by 4 for each election
+                var startDate = 1916;
+                var endDate = 2020;
+                var filePath = "./images/";
+                var fileName = "electionmap";
+                var fileSuffix = ".png";
+                
+                var selector = document.getElementById("years_selector");
+                var counter = 1;
+                for (var year=startDate; year <= endDate; year+=4, counter++) {
+                    selector.add(new Option(year, filePath + fileName + counter + fileSuffix));
+                }
+                
+                // show every entry in the selection box
+                selector.size = counter-1;
+            }
+            
+            function displayMaps() {
+                // display the election maps for each year selected
+                var container=document.getElementById("map_container");
+                var years=document.getElementById("years_selector");
+                
+                // remove any previous election map displayed
+                while(container.lastElementChild) {
+                    container.removeChild(container.lastElementChild);
+                }
+                
+                // display the election maps selected
+                for (var i=0; i < years.options.length; i++) {
+                    if (years.options[i].selected == true){
+                        var img = document.createElement("img");
+                        img.setAttribute("src", years.options[i].value);
+                        container.appendChild(img);
+                    }
+                }
+            }
+        </script>
+    </head>
+    
+    <style type="text/css">
+        #select_pad {margin-left: 2em;
+                    margin-right: -2em;
+        }
+    </style>
+
+    <body onload="initialize()">
+        <label for="years_label">Choose the year(s) to display:</label>
+        <br/>
+        
+        <div id="select_pad">   
+            <form action="javascript:displayMaps()">
+                <select id="years_selector" autofocus="autofocus" multiple="multiple">
+                </select>
+                <br/>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        <br/><br/>
+
+        <div id="map_container"> 
+        </div>
+    </body>
+<//html>
+```

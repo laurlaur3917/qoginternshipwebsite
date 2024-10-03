@@ -14,4 +14,6 @@ format:
 
 [**Project 1**](projects-1.qmd) **: Reading basic US County Maps into R; making the map interactive so one can zoom in for better readability.**
 
-[**Project 2:**](projects-2.qmd) **Merging data, creating a US election map.**
+[**Project 2:**](projects-2.qmd) **Merging data, creating a US election map. Displaying maps over time in various formats.**
+
+[**Project 3:**](projects-3.qmd) **Html list box displaying election plots**
