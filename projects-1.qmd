@@ -116,7 +116,7 @@ Testing shape files:
 
 I tried to plot these as well, but It's too big and don't think it's exactly the data we want. Lets try another source.
 
-<https://eric.clst.org/tech/usgeojson/>: adapted from the United States Census Cartographic Boundary Files. Let's try the 5m US County Boundaries.
+<https://eric.clst.org/tech/usgeojson/>: adapted from the United States Census Cartographic Boundary Files (2010). Let's try the 5m US County Boundaries.
 
 ```{r}
 us_data2<- st_read("data/gz_2010_us_050_00_5m.json", quiet=TRUE)
