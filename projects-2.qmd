@@ -431,10 +431,10 @@ mergedelectiondata<- full_join(newelectiondata, us_data2, by="GEO_ID")
 ##### Let's also create color scales for percentage of Republican and Democrat vote: {style="color:cornflowerblue;"}
 
 ```{r}
-mapcolors <- mergedelectiondata %>% mutate(republicancolor = case_when(republican_excess>0.4 & republican_excess<=0.5 ~ "#a70000", republican_excess > 0.3 & republican_excess <= 0.4 ~ "#ff0000", republican_excess > 0.2 & republican_excess <= 0.3 ~ "#ff5252", republican_excess > 0.1 & republican_excess <= 0.2 ~ 	"#ff7b7b", republican_excess >= 0 & republican_excess<=0.1 ~ "#ffbaba", TRUE ~ NA_character_)) %>% mutate(democratcolor= case_when(democrat_excess>0.4 & democrat_excess<=0.5 ~ "#0200b9",democrat_excess > 0.3 & democrat_excess<= 0.4 ~ "#1000ff",democrat_excess > 0.2 & democrat_excess <= 0.3 ~ "#3399ff", democrat_excess > 0.1 & democrat_excess <= 0.2 ~ "#3a80ec", democrat_excess >= 0 & democrat_excess<= 0.1 ~ "#cce0ff", TRUE ~ NA_character_)) 
+mapcolors <- mergedelectiondata %>% mutate(republicancolor = case_when(republican_excess>0.4 & republican_excess<=0.5 ~ "#a70000", republican_excess > 0.3 & republican_excess <= 0.4 ~ "#ff0000", republican_excess > 0.2 & republican_excess <= 0.3 ~ "#ff5252", republican_excess > 0.1 & republican_excess <= 0.2 ~ 	"#ff7b7b", republican_excess >= 0 & republican_excess<=0.1 ~ "#ffbaba", TRUE ~ NA_character_)) %>% mutate(democratcolor= case_when(democrat_excess>0.4 & democrat_excess<=0.5 ~ "#0200b9",democrat_excess > 0.3 & democrat_excess<= 0.4 ~ "#1000ff",democrat_excess > 0.2 & democrat_excess <= 0.3 ~"#0066cc" , democrat_excess > 0.1 & democrat_excess <= 0.2 ~"#3a80ec", democrat_excess >= 0 & democrat_excess<= 0.1 ~ "#cce0ff", TRUE ~ NA_character_)) 
 ```
 
-#### Let's also rename us_data2 state data to actual state names for use later:  {style="color:teal;"}
+#### Let's also rename us_data2 state data to actual state names for use later: {style="color:teal;"}
 
 ```{r}
 us_data2<- us_data2 %>% mutate(STATE= case_when(
@@ -616,15 +616,43 @@ Myhcmap <- jsonlite::fromJSON(mapjson, simplifyVector = FALSE)
 
 
 #create tooltip table to incorporate all elements we want. 
-x<-c("County Name:", "State:", "Winning Party:", "Winning Party's % of overall vote:")
-y<- c("{point.NAME}", "{point.properties.STATE}", "{point.dominantparty}", "{point.value:,.2f}") #round to 2decimal points
+x<-c("County Name:", "State:", "Winning Party:", "Winning Party's % of overall vote: ")
+y<- c("{point.NAME}", "{point.properties.STATE}", "{point.dominantparty}", "{point.value:,.2f}%") #round to 2decimal points
 tt<- tooltip_table(x,y)
+
+
+#create html manually of labels for interactive map 
+svg_content<- 
+  "<svg>
+    <rect x='10' y='40' width='35' height='20' stroke='black' fill='#cce0ff' stroke-width='3'/>
+    <rect x='45' y='40' width='35' height='20' stroke='black' fill='#3a80ec' stroke-width='3'/>
+    <rect x='80' y='40' width='35' height='20' stroke='black' fill='#0066cc' stroke-width='3'/>
+    <rect x='115' y='40' width='35' height='20' stroke='black'fill='#1000ff' stroke-width='3'/>
+    <rect x='150' y='40' width='35' height='20' stroke='black'fill='#0200b9' stroke-width='3'/>
+    <text x='10' y='72' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>50%</text>
+    <text x='45' y='72' font-size='4' text-anchor='middle' fill='black' font-weight='bold' >60%</text>
+    <text x='80' y='72' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>70%</text>
+    <text x='115' y='72' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>80%</text>
+    <text x='150' y='72' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>90-100%</text>
+    
+    <text x='10' y='34' font-size='13' text-anchor='middle' fill='black' font-weight='bold' font-style='italic' font-family='Georgia, serif'>Democrat Vote %:</text>
+    <rect x='10' y='100' width='35' height='20' stroke='black'fill='#ffbaba' stroke-width='3'/>
+    <rect x='45' y='100' width='35' height='20' stroke='black'fill='#ff7b7b' stroke-width='3'/>
+    <rect x='80' y='100' width='35' height='20' stroke='black'fill='#ff5252' stroke-width='3'/>
+    <rect x='115' y='100'width='35' height='20' stroke='black'fill='#ff0000' stroke-width='3'/>
+    <rect x='150' y='100'width='35' height='20' stroke='black'fill='#a70000' stroke-width='3'/>
+    <text x='10' y='132' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>50%</text>
+    <text x='45' y='132' font-size='4' text-anchor='middle' fill='black' font-weight='bold' >60%</text>
+    <text x='80' y='132' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>70%</text>
+    <text x='115' y='132' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>80%</text>
+    <text x='150' y='132' font-size='4' text-anchor='middle' fill='black' font-weight='bold'>90-100%</text>
+    <text x='10' y='94' font-size='13' text-anchor='middle' fill='black' font-weight='bold' font-style='italic' font-family='Georgia, serif' >Republican Vote %:</text>
+</svg>"
+
 
 #make map
 highchart(type = "map") %>%
-   hc_add_series_map(df= highchartest, map= Myhcmap, name= "% of vote", value="winningpercentage", joinBy= "GEO_ID", showInLegend = T) %>% hc_tooltip(pointFormat=tt, useHTML=TRUE) %>% hc_colorAxis(min=50,max=100) %>% hc_mapNavigation(enabled = TRUE) %>% hc_title(text= "2016 Election Results") %>% hc_subtitle(text="Winning Party's Share of Vote by County") %>% hc_legend(align="right")
+   hc_add_series_map(df= highchartest, map= Myhcmap, name= "% of vote", value="winningpercentage", joinBy= "GEO_ID", showInLegend = T, borderColor="black", borderWidth=0.5) %>% hc_tooltip(pointFormat=tt, useHTML=TRUE) %>% hc_colorAxis(min=50,max=100) %>% hc_mapNavigation(enabled = TRUE) %>% hc_title(text= "2016 Election Results", style = list(color = "black", fontWeight = "bold")) %>% hc_subtitle(text="Winning Party's Share of Vote by County") %>% hc_caption(text=svg_content, align= "left", useHTML=TRUE) %>% hc_legend(enabled=FALSE) 
 
-#can i change the border color/width? couldn't find solution 
-#can't make double scale unless i made democrat or republican values negative don't want to confuse the viewer. 
                                                                                                 
 ```
